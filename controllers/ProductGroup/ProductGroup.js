@@ -1,18 +1,18 @@
-const AreatypeSchema = require("../../models/ServiceType/ServiceType");
-const ServiceDetail=require("../../models/ServiceDetail/ServiceDetail")
+const ProductGroupSchema = require("../../models/ProductGroup/ProductGroup");
+
 exports.createAreatype = async (req, res) => {
   try {
-    const { ServiceName, IsActive } = req.body;
-    const addAreatype = await new AreatypeSchema(req.body).save();
+    const { ProductGroup, IsActive } = req.body;
+    const addAreatype = await new ProductGroupSchema(req.body).save();
     res.status(200).json({ isOk: true, data: addAreatype, message: "" });
   } catch (err) {
-    res.status(200).json({ isOk: false, message: "Error creating Areatype" });
+    res.status(200).json({ isOk: false, message: "Error creating Product Group" });
   }
 };
 
 exports.listAreatype = async (req, res) => {
   try {
-    const list = await AreatypeSchema.find().sort({ createdAt: -1 }).exec();
+    const list = await ProductGroupSchema.find().sort({ createdAt: -1 }).exec();
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
@@ -21,7 +21,7 @@ exports.listAreatype = async (req, res) => {
 
 exports.listActiveAreatype = async (req, res) => {
   try {
-    const list = await AreatypeSchema.find({ IsActive: true })
+    const list = await ProductGroupSchema.find({ IsActive: true })
       .sort({ createdAt: -1 })
       .exec();
     console.log("list avi", list);
@@ -33,9 +33,9 @@ exports.listActiveAreatype = async (req, res) => {
 
 exports.updateAreatype = async (req, res) => {
   try {
-    const update = await AreatypeSchema.findOneAndUpdate(
+    const update = await ProductGroupSchema.findOneAndUpdate(
       { _id: req.params._id },
-      { $set: { "ServiceName": req.body.ServiceName, "IsActive": req.body.IsActive } },
+      { $set: { "ProductGroup": req.body.ProductGroup, "IsActive": req.body.IsActive } },
       { new: true }
     );
     res.json(update);
@@ -46,10 +46,10 @@ exports.updateAreatype = async (req, res) => {
 
 exports.removeAreatype = async (req, res) => {
   try {
-    const delTL = await AreatypeSchema.findByIdAndDelete({
+    const delTL = await ProductGroupSchema.findByIdAndDelete({
       _id: req.params._id,
     });
-    await ServiceDetail.deleteMany({ ServiceName: req.params._id });
+    await ProductGroupSchema.deleteMany({ ProductGroup: req.params._id });
 
     res.json(delTL);
   } catch (err) {
@@ -107,7 +107,7 @@ exports.listAreatypesByParams = async (req, res) => {
           $match: {
             $or: [
               {
-                ServiceName: { $regex: match, $options: "i" },
+                ProductGroup: { $regex: match, $options: "i" },
               },
             ],
           },
@@ -133,7 +133,7 @@ exports.listAreatypesByParams = async (req, res) => {
       ].concat(query);
     }
 
-    const list = await AreatypeSchema.aggregate(query);
+    const list = await ProductGroupSchema.aggregate(query);
 
     res.json(list);
   } catch (error) {

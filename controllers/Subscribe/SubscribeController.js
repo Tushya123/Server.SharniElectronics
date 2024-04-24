@@ -76,7 +76,7 @@ exports.listSubscribeByParams = async (req, res) => {
           $match: {
             $or: [
               {
-                email: { $regex: match, $options: "i" },
+                Phone_Number: { $regex: match, $options: "i" },
               },
             ],
           },

@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 const catchAsync = require("../utils/catchAsync");
-const { createAreatype, listAreatype, listActiveAreatype, updateAreatype, removeAreatype, listAreatypesByParams  } = require("../controllers/ServiceType/ServiceType");
+const { createAreatype, listAreatype, listActiveAreatype, updateAreatype, removeAreatype, listAreatypesByParams  } = require("../controllers/ProductGroup/ProductGroup");
 
 router.post("/auth/areatype", catchAsync(createAreatype));
 router.get("/auth/list/areatype", catchAsync(listAreatype));

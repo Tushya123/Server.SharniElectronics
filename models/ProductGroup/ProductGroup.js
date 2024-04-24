@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
-const ServiceTypeSchema = new mongoose.Schema(
+const ProductGroupSchema = new mongoose.Schema(
   {
-    ServiceName: {
+    ProductGroup: {
       type: String,
     },
     IsActive: {
@@ -11,4 +11,4 @@ const ServiceTypeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("ServiceTypeSchema", ServiceTypeSchema);
+module.exports = mongoose.model("productgroup", ProductGroupSchema);

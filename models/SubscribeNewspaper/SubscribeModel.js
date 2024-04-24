@@ -3,7 +3,7 @@ const { Schema, model, Types } = require("mongoose");
 const Subscribe = new mongoose.Schema(
   {
     
-    email: {
+    Phone_Number: {
       type: String,
     },
     IsActive:{
