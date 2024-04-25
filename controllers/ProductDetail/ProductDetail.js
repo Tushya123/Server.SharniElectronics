@@ -1,4 +1,5 @@
 const proddetails = require("../../models/ProductDetail/ProductDetail");
+// const ProductGroup=require("../../models/ProductGroup/ProductGroup")
 // exports.createProjectDetail = async (req, res) => {
   
 //   try {
@@ -199,6 +200,9 @@ exports.removeProjectDetail = async (req, res) => {
     const delTL = await proddetails.findByIdAndDelete({
       _id: req.params._id,
     });
+    
+
+
     res.json(delTL);
   } catch (err) {
     res.status(400).send(err);

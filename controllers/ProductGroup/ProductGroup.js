@@ -1,4 +1,5 @@
 const ProductGroupSchema = require("../../models/ProductGroup/ProductGroup");
+const proddetails = require("../../models/ProductDetail/ProductDetail");
 
 exports.createAreatype = async (req, res) => {
   try {
@@ -49,7 +50,7 @@ exports.removeAreatype = async (req, res) => {
     const delTL = await ProductGroupSchema.findByIdAndDelete({
       _id: req.params._id,
     });
-    await ProductGroupSchema.deleteMany({ ProductGroup: req.params._id });
+    await proddetails.deleteMany({ ProductDetail: req.params._id });
 
     res.json(delTL);
   } catch (err) {
