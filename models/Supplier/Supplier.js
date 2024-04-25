@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const CompanyDetailsSchema = new mongoose.Schema(
+const SupplierDetailSchema = new mongoose.Schema(
   {
     SupplierName: {
       type: String,
@@ -30,10 +30,13 @@ const CompanyDetailsSchema = new mongoose.Schema(
     // },
     City: {
       type: String,
-      required: true,
+    //   required: true,
     }, State: {
       type: String,
-      required: true,
+    //   required: true,
+    }, Country: {
+      type: String,
+    //   required: true,
     },
    
     Pincode: {
@@ -68,25 +71,25 @@ const CompanyDetailsSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    Website2: {
-      type: String,
-    },
-    Favicon: {
-      type: String,
-    },
-    Icon: {
-      type: String,
-    },
-    Logo: {
-      type: String,
-    },
-    DigitalSignature: {
-      type: String,
-    },
-    GSTNo: {
-      type: String,
-      // required: true,
-    },
+    // Website2: {
+    //   type: String,
+    // },
+    // Favicon: {
+    //   type: String,
+    // },
+    // Icon: {
+    //   type: String,
+    // },
+    // Logo: {
+    //   type: String,
+    // },
+    // DigitalSignature: {
+    //   type: String,
+    // },
+    // GSTNo: {
+    //   type: String,
+    //   // required: true,
+    // },
     IsActive: {
       type: Boolean,
       default: true,
@@ -96,4 +99,4 @@ const CompanyDetailsSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("CompanyDetails", CompanyDetailsSchema);
+module.exports = mongoose.model("SupplierDetail", SupplierDetailSchema);
