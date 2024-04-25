@@ -3,10 +3,10 @@ const SupplierDetailSchema = require("../../models/Supplier/Supplier");
 
 exports.createSupplier = async (req, res) => {
   try {
-    let { IsActive,Website1,EmailID_Sales,EmailID_Office,ContactNo_Office,ContactNo_Support,ContactNo_Sales,Pincode,Country,State,City,Address2,Address1,SupplierName } = req.body;
+    let { IsActive,Website1,EmailID_Sales,EmailID_Office,EmailID_Support,ContactNo_Office,ContactNo_Support,ContactNo_Sales,Pincode,Country,State,City,Address2,Address1,SupplierName } = req.body;
 
     const newProject = await new SupplierDetailSchema({
-        IsActive,Website1,EmailID_Sales,EmailID_Office,ContactNo_Office,ContactNo_Support,ContactNo_Sales,Pincode,Country,State,City,Address2,Address1,SupplierName
+        IsActive,Website1,EmailID_Sales,EmailID_Office,EmailID_Support,ContactNo_Office,ContactNo_Support,ContactNo_Sales,Pincode,Country,State,City,Address2,Address1,SupplierName
     }).save();
 
     res.status(200).json({
@@ -23,7 +23,7 @@ exports.createSupplier = async (req, res) => {
 
 exports.updateSupplier = async (req, res) => {
   try {
-    let { IsActive,Website1,EmailID_Sales,EmailID_Office,ContactNo_Office,ContactNo_Support,ContactNo_Sales,Pincode,Country,State,City,Address2,Address1,SupplierName } = req.body;
+    let { IsActive,Website1,EmailID_Sales,EmailID_Office,EmailID_Support,ContactNo_Office,ContactNo_Support,ContactNo_Sales,Pincode,Country,State,City,Address2,Address1,SupplierName } = req.body;
 
     const update = await SupplierDetailSchema.findOneAndUpdate(
       { _id: req.params._id },
@@ -56,17 +56,17 @@ exports.removeSupplier = async (req, res) => {
     res.status(400).send(err);
   }
 };
-const getspecificSupplier=async(req,res)=>{
+exports.getspecificSupplier=async(req,res)=>{
 try{
     const spec=await SupplierDetailSchema.findOne({_id:req.params});
     res.status(200).send(spec)
 
 }
 catch(error){
-    res.status()
+    res.status(500).send(error)
 }
 }
-const listsupplier=async(req,res)=>{
+exports.listsupplier=async(req,res)=>{
     try{
         const list=await SupplierDetailSchema.find().sort({createdAt:-1}).exec();
         res.status(200).send(list)
