@@ -2,36 +2,36 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
 const catchAsync = require("../utils/catchAsync");
-const { createProjectDetail, listProjectDetail, updateProjectDetail, removeProjectDetail, listProjectDetailByParams } = require("../controllers/ServiceDetail/ServiceDetail");
+const { createProjectDetail, listProjectDetail, updateProjectDetail, removeProjectDetail, listProjectDetailByParams } = require("../controllers/ProductDetail/ProductDetail");
 
 
 const router = express.Router();
 
-const uploadDirectory = "uploads/ProjectDetailImages";
-if (!fs.existsSync(uploadDirectory)) {
-  fs.mkdirSync(uploadDirectory, { recursive: true });
-}
+// const uploadDirectory = "uploads/ProjectDetailImages";
+// if (!fs.existsSync(uploadDirectory)) {
+//   fs.mkdirSync(uploadDirectory, { recursive: true });
+// }
 
-const multerStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDirectory);
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "_" + file.originalname);
-  },
-});
+// const multerStorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, uploadDirectory);
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, Date.now() + "_" + file.originalname);
+//   },
+// });
 
-const upload = multer({ storage: multerStorage });
+const upload = multer();
 
 router.post(
   "/auth/create/projectdetail",
-  upload.single("newImage"),
+  upload.none(), 
   catchAsync(createProjectDetail)
 );
 
 router.put(
     "/auth/update/projectdetail/:_id",
-    upload.single("newImage"),
+    upload.none(),
     catchAsync(updateProjectDetail)
   );
 

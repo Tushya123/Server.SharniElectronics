@@ -1,27 +1,23 @@
-const ServiceDetail = require("../../models/ServiceDetail/ServiceDetail");
-exports.createProjectDetail = async (req, res) => {
+const Inquiry = require("../../models/Inquiry/Inquiry");
+exports.createInquiry = async (req, res) => {
   
   try {
-    let imageURL = req.file
-    ? `uploads/ProjectDetailImages/${req.file.filename}`
-      : null;
-    let { Detail,ServiceName,Description, IsActive } = req.body;
+    // let imageURL = req.file
+    // ? `uploads/InquiryDetails/${req.file.filename}`
+    //   : null;
+    let { IsActive,mobile_no,product,email,Name} = req.body;
 
-    console.log("rsrsrsrsrsrsrs",imageURL);
 
-    const newProject = await new ServiceDetail({
-      ServiceName,
-      Description,
-      // subtitle,
-      Detail,
-      IsActive,
-      imageURL
+
+    const newProject = await new Inquiry({
+mobile_no,product,email,Name,IsActive
+    //   imageURL
     }).save();
 
     res.status(200).json({
       isOk: true,
       data: newProject,
-      message: "New project created successfully",
+      message: "New Inquiry created successfully",
     });
   } catch (err) {
     console.error(err);
@@ -30,13 +26,13 @@ exports.createProjectDetail = async (req, res) => {
 
 };
 
-exports.listProjectDetail = async (req, res) => {
+exports.listEnquiry = async (req, res) => {
   try {
-    const list = await ServiceDetail.aggregate([
+    const list = await Inquiry.aggregate([
         {
           $lookup: {
             from: 'servicetypeschemas',
-            localField: 'ServiceName', 
+            localField: 'product', 
             foreignField: '_id',  
             as: 'serviceTypeDetails'
           }
@@ -51,13 +47,13 @@ exports.listProjectDetail = async (req, res) => {
   }
 };
 
-exports.listActiveProjectDetail = async (req, res) => {
+exports.listActiveInquiryDetails = async (req, res) => {
   try {
-    const list = await ServiceDetail.aggregate([
+    const list = await Inquiry.aggregate([
         {
           $lookup: {
             from: 'servicetypeschemas',
-            localField: 'ServiceName', 
+            localField: 'product', 
             foreignField: '_id',  
             as: 'serviceTypeDetails'
           }
@@ -69,22 +65,22 @@ exports.listActiveProjectDetail = async (req, res) => {
             preserveNullAndEmptyArrays: true,
           },
         },
-        {
-          $match: {
-            $or: [
-              {
-                "specialtyInfo.0.SpecialityName": new RegExp(match, "i"),
-              },
-              {
-                detail: new RegExp(match, "i"),
-              },   {
-                DoctorName: new RegExp(match, "i"),
-              },   {
-                specialityNameOther: new RegExp(match, "i"),
-              },
-            ],
-          },
-        },
+        // {
+        //   $match: {
+        //     $or: [
+        //       {
+        //         "specialtyInfo.0.SpecialityName": new RegExp(match, "i"),
+        //       },
+        //       {
+        //         Name: new RegExp(match, "i"),
+        //       },   {
+        //         email: new RegExp(match, "i"),
+        //       },   {
+        //         specialityNameOther: new RegExp(match, "i"),
+        //       },
+        //     ],
+        //   },
+        // },
         {
           $sort: { createdAt: -1 }
         }
@@ -96,24 +92,25 @@ exports.listActiveProjectDetail = async (req, res) => {
   }
 };
 
-exports.updateProjectDetail = async (req, res) => {
+exports.updateInquiryDetail = async (req, res) => {
     try {
-        console.log("kokokkokokokokoko",req.file)
-        let imageURL = req.file
-        ? `uploads/ProjectDetailImages/${req.file.filename}`
-          : req.body.imageURL;
-        let {Detail,ServiceName,Description, IsActive} = req.body;
+        // console.log("kokokkokokokokoko",req.file)
+        // let imageURL = req.file
+        // ? `uploads/ProjectDetailImages/${req.file.filename}`
+        //   : req.body.imageURL;
+        let {IsActive,mobile_no,product,email,Name} = req.body;
     
-        console.log("rsrsrsrsrsrsrs",imageURL);
+       
 
-        const update = await ServiceDetail.findOneAndUpdate(
+        const update = await Inquiry.findOneAndUpdate(
             { _id: req.params._id },
             { $set: { 
-                "ServiceName": ServiceName,
-                "IsActive": IsActive,
-                "Description": Description,
-                "Detail": Detail,
-                "imageURL": imageURL
+                "mobile_no": req.body.mobile_no,
+                "IsActive": req.body.IsActive,
+                "product": req.body.product,
+                // "Detail": Detail,
+                "email": req.body.email,
+                "Name":req.body.Name
 
                  } },
             { new: true }
@@ -130,11 +127,10 @@ exports.updateProjectDetail = async (req, res) => {
       }
 };
 
-exports.removeProjectDetail = async (req, res) => {
+exports.removeInquiryDetail = async (req, res) => {
   try {
-    const delTL = await ServiceDetail.findByIdAndDelete({
-      _id: req.params._id,
-    });
+    const delTL = await Inquiry.findByIdAndDelete(
+     req.params);
     res.json(delTL);
   } catch (err) {
     res.status(400).send(err);
@@ -143,7 +139,7 @@ exports.removeProjectDetail = async (req, res) => {
 
 
 
-exports.listProjectDetailByParams = async (req, res) => {
+exports.listInquiryDetailsByParams = async (req, res) => {
   try {
     let { skip, per_page, sorton, sortdir, match, IsActive } = req.body;
     console.log("Received skip:", skip);
@@ -161,7 +157,7 @@ exports.listProjectDetailByParams = async (req, res) => {
       {
         $lookup: {
           from: "servicetypeschemas",
-          localField: "ServiceName",
+          localField: "product",
           foreignField: "_id",
           as: "serviceTypeDetails",
         },
@@ -179,7 +175,7 @@ exports.listProjectDetailByParams = async (req, res) => {
               "serviceTypeDetails.0.ServiceName": new RegExp(match, "i"),
             },
             {
-              Description: new RegExp(match, "i"),
+                Name: new RegExp(match, "i"),
             }
           ],
         },
@@ -239,10 +235,23 @@ exports.listProjectDetailByParams = async (req, res) => {
       });
     }
 
-    const list = await ServiceDetail.aggregate(query);
+    const list = await Inquiry.aggregate(query);
     res.json(list);
   } catch (error) {
     console.error("Error in listProjectDetailByParams:", error);
     res.status(500).send("Internal Server Error");
   }
 };
+
+
+
+exports.getspecificinquiry=async(req,res)=>{
+    try{
+        const specificinquity=await Inquiry.findOne({_id:req.params});
+        res.status(200).send(specificinquity)
+
+    }
+    catch(error){
+        res.status(500).send(error)
+    }
+}
