@@ -3,7 +3,9 @@ const assignproduct = require("../../models/Supplier/AssignSupplier");
 exports.createAssignProduct = async (req, res) => {
   try {
     let { SupplierName, ProductDetail, isActive  } = req.body;
-
+    if (typeof ProductDetail === 'string') {
+      ProductDetail = ProductDetail.split(',').map(typology => typology.trim());
+    }
     const newsupplierassign = await new assignproduct({
         SupplierName, ProductDetail, isActive
     }).save();
