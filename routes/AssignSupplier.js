@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
 const catchAsync = require("../utils/catchAsync");
-const { createAssignProduct,  updateAssignProduct, removeAssignProduct, listAssignProductByParams,listAssignProduct } = require("../controllers/Supplier/AssignSupplier");
+const { createAssignProduct,  updateAssignProduct, removeAssignProduct, listAssignProductByParams,listAssignProduct,getAssignProductById } = require("../controllers/Supplier/AssignSupplier");
 
 
 const router = express.Router();
@@ -39,6 +39,12 @@ router.get(
     "/auth/list/AssignProduct",
     catchAsync(listAssignProduct)
   );
+router.get("/auth/get/getAssignProductById/:_id", upload.none(),catchAsync(getAssignProductById))
+
+// router.get(
+//     "/auth/list/AssignProduct",
+//     catchAsync(listAssignProduct)
+//   );
 
 router.delete(
     "/auth/remove/AssignProduct/:_id",

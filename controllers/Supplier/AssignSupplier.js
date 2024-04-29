@@ -1,9 +1,13 @@
 const assignproduct = require("../../models/Supplier/AssignSupplier");
- 
+const mongoose = require('mongoose');
+
+
 exports.createAssignProduct = async (req, res) => {
   try {
     let { SupplierName, ProductDetail, isActive  } = req.body;
-
+    if (typeof ProductDetail === 'string') {
+      ProductDetail = ProductDetail.split(',').map(typology => typology.trim());
+    }
     const newsupplierassign = await new assignproduct({
         SupplierName, ProductDetail, isActive
     }).save();
@@ -259,3 +263,95 @@ exports.listAssignProduct=async(req,res)=>{
     res.status(500).send(error)
   }
 }
+
+// exports.AssignProductById= async(req,res)=>{
+// try{
+//   // const id= req.params._id
+//   // console.log(id)
+//   let { skip, per_page, sorton, sortdir, match, isActive ,_id} = req.body;
+// console.log(req.body)
+//   let query=[
+//     {
+//       $match: {
+//         _id: _id // Assuming you're using Mongoose, you may need to import mongoose.
+//       }
+//     },
+//     {
+//       $lookup: {
+//         from: "productdetails",
+//         localField: "ProductDetail",
+//         foreignField: "_id",
+//         as: "ProductDetailTypes",
+//       },
+
+//     }, 
+//     {
+//       $sort: { createdAt: -1 },
+//     },
+//     {
+//       $match: {
+//         $or: [
+//           { "ProductDetailTypes.ProductDetail": new RegExp(match, "i") },
+//           // { "SupplierDetailTypes.SupplierName": new RegExp(match, "i") },
+//         ],
+//       },
+//     },
+//     {
+//       $facet: {
+//         stage1: [
+//           {
+//             $group: {
+//               _id: null,
+//               count: {
+//                 $sum: 1,
+//               },
+//             },
+//           },
+//         ],
+//         stage2: [
+//           { $skip: parseInt(skip) },
+//           { $limit: parseInt(per_page) },
+//         ],
+//       },
+//     },
+//     {
+//       $unwind: "$stage1",
+//     },
+//     {
+//       $project: {
+//         count: "$stage1.count",
+//         data: "$stage2",
+//       },
+//     },
+//   ];
+//   console.log(query)
+//   if (sorton && sortdir) {
+//     let sort = {};
+//     sort[sorton] = sortdir == "desc" ? -1 : 1;
+//     query.unshift({ $sort: sort });
+//   } else {
+//     query.unshift({ $sort: { createdAt: -1 } });
+//   }
+
+//   const list = await assignproduct.aggregate(query);
+  
+//   res.json(list);
+
+// }
+// catch (error) {
+//   console.error("Error in get by id:", error);
+//   res.status(500).send("Internal Server Error");
+// }
+
+// };
+
+exports.getAssignProductById=async(req,res)=>{
+  try{
+      const spec=await assignproduct.findOne({_id:req.params});
+      res.status(200).send(spec)
+  
+  }
+  catch(error){
+      res.status(500).send(error)
+  }
+  }
