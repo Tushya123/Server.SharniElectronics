@@ -4,13 +4,13 @@ const AssignProductSchema = new mongoose.Schema(
   {
     SupplierName: {
         type: mongoose.Schema.Types.ObjectId ,
-        ref: "supplierdetails",
+        ref: "SupplierDetail",
     },
-    ProductDetail: {
-      type:  [mongoose.Schema.Types.ObjectId] ,
-      ref: "productdetails",
+    ProductDetail: [
+      {type:  mongoose.Schema.Types.ObjectId ,
+        ref: "productdetail",}
      
-    },
+    ],
  
     isActive: {
       type: Boolean,

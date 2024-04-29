@@ -41,10 +41,7 @@ router.get(
   );
 router.get("/auth/get/getAssignProductById/:_id", upload.none(),catchAsync(getAssignProductById))
 
-// router.get(
-//     "/auth/list/AssignProduct",
-//     catchAsync(listAssignProduct)
-//   );
+
 
 router.delete(
     "/auth/remove/AssignProduct/:_id",
