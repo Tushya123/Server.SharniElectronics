@@ -249,3 +249,13 @@ exports.listAssignProductByParams = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
+exports.listAssignProduct=async(req,res)=>{
+  try{
+    const list=await assignproduct.find().sort({createdAt:-1}).exec();
+    res.status(200).send(list);
+  }
+  catch(error){
+    res.status(500).send(error)
+  }
+}

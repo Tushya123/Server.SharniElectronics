@@ -314,3 +314,16 @@ exports.listProjectDetailByParams = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
+exports.listProjectDetail=async(req,res)=>{
+  try{
+    const list = await proddetails.find().populate({path:"ProductDetail",select:"ProductGroup"})
+    res.status(200).send(list);
+
+
+  }
+  catch(err){
+    res.status(500).send(err);
+
+  }
+}

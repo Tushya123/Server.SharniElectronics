@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
 const catchAsync = require("../utils/catchAsync");
-const { createAssignProduct,  updateAssignProduct, removeAssignProduct, listAssignProductByParams } = require("../controllers/Supplier/AssignSupplier");
+const { createAssignProduct,  updateAssignProduct, removeAssignProduct, listAssignProductByParams,listAssignProduct } = require("../controllers/Supplier/AssignSupplier");
 
 
 const router = express.Router();
@@ -35,10 +35,10 @@ router.put(
     catchAsync(updateAssignProduct)
   );
 
-// router.get(
-//     "/auth/list/AssignProduct",
-//     catchAsync(listAssignProduct)
-//   );
+router.get(
+    "/auth/list/AssignProduct",
+    catchAsync(listAssignProduct)
+  );
 
 router.delete(
     "/auth/remove/AssignProduct/:_id",
