@@ -256,7 +256,14 @@ exports.listAssignProductByParams = async (req, res) => {
 
 exports.listAssignProduct=async(req,res)=>{
   try{
-    const list=await assignproduct.find().sort({createdAt:-1}).exec();
+    const list=await assignproduct.find() .populate({
+      path: "SupplierName", // Populating SupplierName field
+      select: "SupplierName"
+    })
+    .populate({
+      path: "ProductDetail", // Populating ProductDetail field
+      select: "Description" // Selecting only the _id field
+    }).sort({createdAt:-1}).exec();
     res.status(200).send(list);
   }
   catch(error){
@@ -275,3 +282,5 @@ exports.getAssignProductById=async(req,res)=>{
       res.status(500).send(error)
   }
   }
+
+  
