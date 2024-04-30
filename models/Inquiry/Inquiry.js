@@ -1,30 +1,58 @@
 const mongoose = require("mongoose");
 
 const InquirySchema = new mongoose.Schema({
-    Name:{
-        type:String,
-
+    ProductDetail: [
+        {type:  mongoose.Schema.Types.ObjectId ,
+        ref: "InquiryProduct"}
+    ],
+     
+    ContactPerson: {
+        type: String
     },
-    email:{
-        type:String,
-        // unique:true,
+    CompanyName: {
+        type: String
     },
-    product:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"ServiceTypeSchema"
+    Reference: {
+        type: String
     },
-   
-    mobile_no:{
-        type:String,
-        // unique:true
+    Address: {
+        type: String
     },
-    IsActive:{
-        type:Boolean,
-        default:true
+    Country: {
+        type: String
     },
-   
+    Phone: {
+        type: String
+    },
+    Fax: {
+        type: String
+    },
+    Mobile: {
+        type: String
+    },
+    Email: {
+        type: String
+    },
+    Comments: {
+        type: String
+    },
+    Status:{
+        type: Boolean,
+        default: false
+    },
+    RFQ_Status:{
+        type: Boolean,
+        default: false
+    }, Quote:{
+        type: Boolean,
+        default: false
+    },
+    IsActive: {
+        type: Boolean,
+        default: true
+    }
 },
-{timestamps:true}
+{ timestamps: true }
 );
 
-module.exports = mongoose.model("Inquiry",InquirySchema);
+module.exports = mongoose.model("Inquiry", InquirySchema);
