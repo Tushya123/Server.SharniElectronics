@@ -18,10 +18,17 @@ const InquirySchema = new mongoose.Schema({
     BasePrice:{
         type:Number
     },
+    RFQ_Status2:{
+        type: Boolean,
+        default: false
+    }
+    , RFQ_Date:{
+        type:String,
+    },
     IsActive: {
         type: Boolean,
         default: true
-    }
+    } 
 },
 { timestamps: true }
 );

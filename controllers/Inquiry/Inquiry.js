@@ -218,13 +218,56 @@ exports.listInquiryDetailsByParams = async (req, res) => {
 };
 
 
-exports.getspecificinquiry=async(req,res)=>{
-    try{
-        const specificinquity=await Inquiry.findOne({_id:req.params});
-        res.status(200).send(specificinquity)
+// exports.getspecificinquiry=async(req,res)=>{
+//     try{
+//         const specificinquity=await Inquiry.findOne({_id:req.params}).populate({
+//           path:"ProductDetail",select: "-_id"
+//         });
+//         res.status(200).send(specificinquity)
 
-    }
-    catch(error){
-        res.status(500).send(error)
-    }
+//     }
+//     catch(error){
+//         res.status(500).send(error)
+//     }
+// }
+
+// exports.getspecificinquiry = async (req, res) => {
+//   try {
+//       const specificinquiry = await Inquiry.aggregate([
+//           { 
+//               $match: {
+//                   _id: req.params // Assuming req.params contains the ID of the specific inquiry
+//               }
+//           },
+//           // { 
+//           //     $lookup: {
+//           //         from: "inquiryproducts",
+//           //         localField: "ProductDetail",
+//           //         foreignField: "_id",
+//           //         as: "InquiryDetails"
+//           //     }
+//           // }
+//       ]);
+      
+//       res.status(200).send(specificinquiry);
+//   } catch(error) {
+//       res.status(500).send(error);
+//   }
+// }
+
+exports.getspecificinquiry = async (req, res) => {
+  try {
+      const specificinquiry = await Inquiry.findById(req.params) // Assuming req.params contains the ID of the specific inquiry
+                                      .populate('ProductDetail'); // Use populate to perform a lookup on the ProductDetail field
+      
+      if (!specificinquiry) {
+          return res.status(404).send("Inquiry not found");
+      }
+      
+      res.status(200).send(specificinquiry);
+  } catch(error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
+  }
 }
+

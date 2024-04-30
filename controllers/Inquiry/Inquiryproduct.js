@@ -1,11 +1,11 @@
 const InquiryProduct = require("../../models/Inquiry/Inquiryproduct");
 exports.createInquiryProduct = async (req, res) => {
   try {
-    let { IsActive ,Grade,ProductDetail2, Quantity , ProductDetailLabel,BasePrice,Group
+    let { IsActive ,Grade,ProductDetail2, Quantity , ProductDetailLabel,BasePrice,Group,RFQ_Status2, RFQ_Date
        } = req.body;
 
     const newInquiryProduct = await new InquiryProduct({
-        IsActive ,Grade,Quantity,  ProductDetail:ProductDetail2  ,Group , ProductDetailLabel,BasePrice
+        IsActive ,Grade,Quantity,  ProductDetail:ProductDetail2  ,Group , ProductDetailLabel,BasePrice,RFQ_Status2, RFQ_Date
     }).save();
 
     res.status(200).json({
