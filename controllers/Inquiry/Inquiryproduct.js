@@ -1,11 +1,11 @@
 const InquiryProduct = require("../../models/Inquiry/Inquiryproduct");
 exports.createInquiryProduct = async (req, res) => {
   try {
-    let { IsActive ,Grade,ProductDetail2, Quantity , ProductDetailLabel,BasePrice,Group,RFQ_Status2, RFQ_Date
+    let { IsActive ,Grade,ProductDetail2, Quantity , SupplierName,ProductDetailLabel,BasePrice,Group,RFQ_Status2, RFQ_Date
        } = req.body;
 
     const newInquiryProduct = await new InquiryProduct({
-        IsActive ,Grade,Quantity,  ProductDetail:ProductDetail2  ,Group , ProductDetailLabel,BasePrice,RFQ_Status2, RFQ_Date
+        IsActive ,Grade,Quantity,  ProductDetail:ProductDetail2  ,Group , ProductDetailLabel,BasePrice,RFQ_Status2, RFQ_Date,SupplierName
     }).save();
 
     res.status(200).json({
@@ -92,21 +92,13 @@ exports.updateInquiryProductDetail = async (req, res) => {
         // let imageURL = req.file
         // ? `uploads/ProjectDetailImages/${req.file.filename}`
         //   : req.body.imageURL;
-        let {IsActive,mobile_no,product,email,Name} = req.body;
-    
+        let {  IsActive ,Grade,Quantity,  ProductDetail2  ,Group , ProductDetailLabel,BasePrice,RFQ_Status2, RFQ_Date,SupplierName} = req.body;
+        req.body.ProductDetail=ProductDetail2
        
 
         const update = await InquiryProduct.findOneAndUpdate(
             { _id: req.params._id },
-            { $set: { 
-                "mobile_no": req.body.mobile_no,
-                "IsActive": req.body.IsActive,
-                "product": req.body.product,
-                // "Detail": Detail,
-                "email": req.body.email,
-                "Name":req.body.Name
-
-                 } },
+           req.body,
             { new: true }
           );
     

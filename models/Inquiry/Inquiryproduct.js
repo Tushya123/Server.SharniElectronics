@@ -6,6 +6,10 @@ const InquirySchema = new mongoose.Schema({
         ref: "productdetail"},
     ProductDetailLabel:{ 
     type:String}, 
+    SupplierName: {
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SupplierDetail' }],
+        default: []
+    },
     Grade:{
         type:String,
     },
