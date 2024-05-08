@@ -4,10 +4,10 @@ const CategorySchema = require("../../models/Category/Category");
 exports.createCategory = async (req, res) => {
   try {
     const { Category, IsActive } = req.body;
-    const addCategory = await new PreferenceSchema(req.body).save();
+    const addCategory = await new CategorySchema(req.body).save();
     res.status(200).json({ isOk: true, data: addCategory, message: "" });
   } catch (err) {
-    res.status(200).json({ isOk: false, message: "Error creating Category" });
+    res.status(500).json({ isOk: false, message: "Error creating Category" });
   }
 };
 

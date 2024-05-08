@@ -52,4 +52,26 @@ router.delete(
     catchAsync(listProjectDetailByParams)
   );
 
+  const multerStorageCK = multer.diskStorage({
+    destination: (req, file, cb) => {
+      const dest = "uploads/productCkEditor";
+      // Ensure the directory exists
+      fs.mkdirSync(dest, { recursive: true });
+      cb(null, dest);
+    },
+    filename: (req, file, cb) => {
+      cb(null, Date.now() + "_" + file.originalname);
+    },
+  });
+  const uploadCk = multer({ storage: multerStorageCK });
+  
+  //upload images
+  router.post(
+    "/auth/ckeditorproduct/imageupload",
+    uploadCk.single("uploadImage"),
+    async (req, res) => {
+      console.log(req.file.filename);
+      res.json({ url: req.file.filename });
+    }
+  );
 module.exports = router;

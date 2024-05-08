@@ -1,11 +1,11 @@
 const InquiryProduct = require("../../models/Inquiry/Inquiryproduct");
 exports.createInquiryProduct = async (req, res) => {
   try {
-    let { IsActive ,Grade,ProductDetail2, Quantity , SupplierName,ProductDetailLabel,BasePrice,Group,RFQ_Status2, RFQ_Date
+    let { IsActive ,ProductDetail2, Quantity , SupplierName,ProductDetailLabel,BasePrice,Group,RFQ_Status2, RFQ_Date
        } = req.body;
 
     const newInquiryProduct = await new InquiryProduct({
-        IsActive ,Grade,Quantity,  ProductDetail:ProductDetail2  ,Group , ProductDetailLabel,BasePrice,RFQ_Status2, RFQ_Date,SupplierName
+        IsActive ,Quantity,  ProductDetail:ProductDetail2  ,Group , ProductDetailLabel,BasePrice,RFQ_Status2, RFQ_Date,SupplierName
     }).save();
 
     res.status(200).json({
@@ -92,7 +92,7 @@ exports.updateInquiryProductDetail = async (req, res) => {
         // let imageURL = req.file
         // ? `uploads/ProjectDetailImages/${req.file.filename}`
         //   : req.body.imageURL;
-        let {  IsActive ,Grade,Quantity,  ProductDetail2  ,Group , ProductDetailLabel,BasePrice,RFQ_Status2, RFQ_Date,SupplierName} = req.body;
+        let {  IsActive ,Quantity,  ProductDetail2  ,Group , ProductDetailLabel,BasePrice,RFQ_Status2, RFQ_Date,SupplierName} = req.body;
         req.body.ProductDetail=ProductDetail2
        
 
@@ -140,21 +140,23 @@ exports.listInquiryProductDetailsByParams = async (req, res) => {
       {
         $match: { IsActive: IsActive },
       },
-      {
-        $lookup: {
-          from: "inquiryproducts",
-          localField: "ProductDetail",
-          foreignField: "_id",
-          as: "ProductDetailTypes",
-        },
-      },
+      // {
+      //   $lookup: {
+      //     from: "inquiryproducts",
+      //     localField: "ProductDetail",
+      //     foreignField: "_id",
+      //     as: "ProductDetailTypes",
+      //   },
+      // },
      
       {
         $match: {
           $or: [
             
             {
-              Grade: new RegExp(match, "i"),
+              Quantity: new RegExp(match, "i"),
+            }, {
+              ProductDetailLabel: new RegExp(match, "i"),
             }
           ],
         },

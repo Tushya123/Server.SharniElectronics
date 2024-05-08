@@ -1,6 +1,8 @@
 const assignproduct = require("../../models/Supplier/AssignSupplier");
 const mongoose = require('mongoose');
-
+const ExcelJS = require('exceljs');
+const path=require('path')
+const fs=require("fs");
 
 exports.createAssignProduct = async (req, res) => {
   try {
@@ -125,6 +127,7 @@ exports.createAssignProduct = async (req, res) => {
 //       }
 // };
 const multer = require('multer');
+const ProductDetail = require("../../models/ProductDetail/ProductDetail");
 
 // Set up multer for handling form data
 const upload = multer();
@@ -284,5 +287,71 @@ exports.getAssignProductById=async(req,res)=>{
       res.status(500).send(error)
   }
   }
+  exports.getAssignProductBySupplierNameId=async(req,res)=>{
+  try{
+      const spec = await assignproduct.findOne({SupplierName:req.params})  .populate({
+        path: 'ProductDetail',
+        populate: { path: 'ProductDetail' } });
+      
+      res.status(200).send(spec)
+  
+  }
+  catch(error){
+      res.status(500).send(error)
+  }
+  }
+
+  exports.generateSupplierWiseProductReportExcel = async (req, res) => {
+    
+  
+    try {
+      const inquiries = await assignproduct.findOne({SupplierName:req.params})
+      .populate({
+        path: 'ProductDetail',
+        populate: { path: 'ProductDetail' } })
+        .sort({ createdAt: -1 });
+  
+      // Prepare the data for the Excel report
+      console.log(inquiries.ProductDetail)
+      const excelData = inquiries.ProductDetail.map((inquiry) => {
+        const productDetail = {
+          Description: inquiry.Description,
+          ProductGroup: inquiry.ProductDetail.ProductGroup
+        };
+  
+        return {
+        
+          // Adding Description and ProductGroup to the excelData
+          ...productDetail // Assuming there is only one ProductDetail per inquiry
+        };
+      });
+  
+      // Create the Excel workbook and worksheet
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Supplier Wise Product");
+      worksheet.columns = [
+        { header: "Description", key: "Description", width: 20 }, // Add Description column
+        { header: "Product Group", key: "ProductGroup", width: 20 } // Add ProductGroup column
+      ];
+  
+      // Add the data to the worksheet
+      excelData.forEach((data) => {
+        worksheet.addRow(data);
+      });
+  
+      // Generate the Excel file
+      const filePath = path.join(__dirname, "Publish_media.xlsx");
+      await workbook.xlsx.writeFile(filePath);
+  
+      // Send the Excel file as a response
+      res.download(filePath, "Publish_media.xlsx", () => {
+        fs.unlinkSync(filePath);
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "An error occurred while generating the report" });
+    }
+  };
+  
 
   

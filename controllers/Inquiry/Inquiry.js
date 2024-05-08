@@ -103,21 +103,15 @@ exports.updateInquiryDetail = async (req, res) => {
         // let imageURL = req.file
         // ? `uploads/ProjectDetailImages/${req.file.filename}`
         //   : req.body.imageURL;
-        let {IsActive,mobile_no,product,email,Name} = req.body;
+        let {IsActive , Mobile, ProductDetail, Email, CompanyName, ContactPerson, Reference, Address, Country, Phone, Fax, Comments ,Status,
+          RFQ_Status,
+          Quote} = req.body;
     
        
 
         const update = await Inquiry.findOneAndUpdate(
             { _id: req.params._id },
-            { $set: { 
-                "mobile_no": req.body.mobile_no,
-                "IsActive": req.body.IsActive,
-                "product": req.body.product,
-                // "Detail": Detail,
-                "email": req.body.email,
-                "Name":req.body.Name
-
-                 } },
+            req.body,
             { new: true }
           );
     

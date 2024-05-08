@@ -10,9 +10,9 @@ const InquirySchema = new mongoose.Schema({
         type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SupplierDetail' }],
         default: []
     },
-    Grade:{
-        type:String,
-    },
+    // Grade:{
+    //     type:String,
+    // },
     Quantity:{
         type:Number
     },
