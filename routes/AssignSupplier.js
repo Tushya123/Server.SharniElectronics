@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
 const catchAsync = require("../utils/catchAsync");
-const { createAssignProduct,  updateAssignProduct, removeAssignProduct, listAssignProductByParams,listAssignProduct,getAssignProductById } = require("../controllers/Supplier/AssignSupplier");
+const { createAssignProduct,  updateAssignProduct, removeAssignProduct, listAssignProductByParams,listAssignProduct,getAssignProductById,getAssignProductBySupplierNameId,generateSupplierWiseProductReportExcel } = require("../controllers/Supplier/AssignSupplier");
 
 
 const router = express.Router();
@@ -40,6 +40,8 @@ router.get(
     catchAsync(listAssignProduct)
   );
 router.get("/auth/get/getAssignProductById/:_id", upload.none(),catchAsync(getAssignProductById))
+router.get("/auth/get/getAssignProductBySupplierNameId/:_id", upload.none(),catchAsync(getAssignProductBySupplierNameId))
+router.get("/auth/get/generateSupplierWiseProductReportExcel/:_id", upload.none(),catchAsync(generateSupplierWiseProductReportExcel))
 
 
 

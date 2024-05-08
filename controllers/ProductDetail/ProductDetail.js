@@ -1,49 +1,15 @@
 const proddetails = require("../../models/ProductDetail/ProductDetail");
-// const ProductGroup=require("../../models/ProductGroup/ProductGroup")
-// exports.createProjectDetail = async (req, res) => {
-  
-//   try {
-//     // let imageURL = req.file
-//     // ? `uploads/ProjectDetailImages/${req.file.filename}`
-//     //   : null;
-//     let { ProductDetail,Description, IsActive,BP,USP,EP,Other } = req.body;
-
-//     // console.log("rsrsrsrsrsrsrs",imageURL);
-
-//     const newProject = await new proddetails({
-//       ProductDetail,
-//       Description,
-//       // subtitle,
-//       // Detail,
-//       IsActive,
-//       BP,USP,EP,Other,
-//       // imageURL
-//     }).save();
-
-//     res.status(200).json({
-//       isOk: true,
-//       data: newProject,
-//       message: "New project created successfully",
-//     });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ isOk: false, error: err });
-//   }
-
-// };
 
 exports.createProjectDetail = async (req, res) => {
   try {
-    let { ProductDetail, Description, IsActive, BP, USP, EP, Other } = req.body;
+    let { Detail,ProductDetail, Description, IsActive } = req.body;
 
     const newProject = await new proddetails({
       ProductDetail,
       Description,
+      Detail,
       IsActive,
-      BP,
-      USP,
-      EP,
-      Other
+    
     }).save();
 
     res.status(200).json({
@@ -57,107 +23,6 @@ exports.createProjectDetail = async (req, res) => {
   }
 };
 
-
-
-// exports.listProjectDetail = async (req, res) => {
-//   try {
-//     const list = await proddetails.aggregate([
-//         {
-//           $lookup: {
-//             from: 'servicetypeschemas',
-//             localField: 'ProductDetail', 
-//             foreignField: '_id',  
-//             as: 'serviceTypeDetails'
-//           }
-//         },
-//         {
-//           $sort: { createdAt: -1 }
-//         }
-//       ]);
-//     res.json(list);
-//   } catch (error) {
-//     return res.status(400).send(error);
-//   }
-// };
-
-// exports.listActiveProjectDetail = async (req, res) => {
-//   try {
-//     const list = await proddetails.aggregate([
-//         {
-//           $lookup: {
-//             from: 'servicetypeschemas',
-//             localField: 'ProductDetail', 
-//             foreignField: '_id',  
-//             as: 'serviceTypeDetails'
-//           }
-//         },
-        
-//         {
-//           $unwind: {
-//             path: "$specialitymanagements",
-//             preserveNullAndEmptyArrays: true,
-//           },
-//         },
-//         {
-//           $match: {
-//             $or: [
-//               {
-//                 "specialtyInfo.0.SpecialityName": new RegExp(match, "i"),
-//               },
-//                  {
-//                 Description: new RegExp(match, "i"),
-//               },  
-//             ],
-//           },
-//         },
-//         {
-//           $sort: { createdAt: -1 }
-//         }
-//       ]);
-//     console.log("list avi", list);
-//     res.json(list);
-//   } catch (error) {
-//     return res.status(400).send(error);
-//   }
-// };
-
-// exports.updateProjectDetail = async (req, res) => {
-//     try {
-//         // console.log("kokokkokokokokoko",req.file)
-//         // let imageURL = req.file
-//         // ? `uploads/ProjectDetailImages/${req.file.filename}`
-//         //   : req.body.imageURL;
-//         let {ProductDetail,Description, IsActive,BP,USP,EP,Other} = req.body;
-    
-//         console.log("rsrsrsrsrsrsrs",imageURL);
-
-//         const update = await proddetails.findOneAndUpdate(
-//             { _id: req.params._id },
-//             { $set: { 
-//                 "ProductDetail": ProductDetail,
-//                 "IsActive": IsActive,
-//                 "BP": BP,
-//                 "USP": USP,
-//                 "EP": EP,
-//                 "Other": Other,
-//                 "Description": Description,
-//                 // "Detail": Detail,
-//                 // "imageURL": imageURL
-
-//                  } },
-//             { new: true }
-//           );
-    
-//         res.status(200).json({
-//           isOk: true,
-//           data: update,
-//           message: "Project updated successfully",
-//         });
-//       } catch (err) {
-//         console.error(err);
-//         res.status(500).json({ isOk: false, error: "Internal server error" });
-//       }
-// };
 const multer = require('multer');
 
 // Set up multer for handling form data
@@ -165,18 +30,15 @@ const upload = multer();
 
 exports.updateProjectDetail = async (req, res) => {
   try {
-    let { ProductDetail, Description, IsActive, BP, USP, EP, Other } = req.body;
+    let { Detail,ProductDetail, Description, IsActive } = req.body;
 
     const update = await proddetails.findOneAndUpdate(
       { _id: req.params._id },
       {
         $set: {
           "ProductDetail": ProductDetail,
+          "Detail": Detail,
           "IsActive": IsActive,
-          "BP": BP,
-          "USP": USP,
-          "EP": EP,
-          "Other": Other,
           "Description": Description,
         }
       },
@@ -244,7 +106,7 @@ exports.listProjectDetailByParams = async (req, res) => {
         $match: {
           $or: [
             {
-              "ProductDetailTypes.0.ProductDetail": new RegExp(match, "i"),
+              "ProductDetailTypes.0.ProductGroup": new RegExp(match, "i"),
             },
             {
               Description: new RegExp(match, "i"),

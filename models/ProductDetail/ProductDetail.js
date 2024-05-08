@@ -8,21 +8,11 @@ const ProductDetailSchema = new mongoose.Schema(
     Description: {
         type: String,
     },
-    // Detail: {
-    //     type: String,
-    // },
-    // imageURL: {
-    //     type: String,
-    // },
+    Detail:{
+      type:String
+    },
+ 
     IsActive: {
-        type: Boolean,
-    },BP: {
-        type: Boolean,
-    },USP: {
-        type: Boolean,
-    },EP: {
-        type: Boolean,
-    },Other: {
         type: Boolean,
     },
   },

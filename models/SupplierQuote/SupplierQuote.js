@@ -6,9 +6,7 @@ const SupplierQuoteSchema = new mongoose.Schema(
     type:mongoose.Schema.Types.ObjectId,
     ref:"productdetail"
    },
-   Grade:{
-    type:String
-   },
+
    Quantity:{
     type:Number
    },

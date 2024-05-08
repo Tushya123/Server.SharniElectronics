@@ -1,10 +1,15 @@
 const express=require("express");
 const catchAsync=require("../utils/catchAsync");
 
+const multer = require("multer");
+
 const {createInquiry,listEnquiry,listActiveInquiryDetails,updateInquiryDetail,removeInquiryDetail,listInquiryDetailsByParams,getspecificinquiry}=require("../controllers/Inquiry/Inquiry")
 const router=express.Router();
 
-router.post("/auth/create/inquiry",catchAsync(createInquiry));
+const upload = multer();
+router.post("/auth/create/inquiry",
+upload.none(),catchAsync(createInquiry));
+
 router.post("/auth/list-by-params/inquiry",catchAsync(listInquiryDetailsByParams));
 router.get("/auth/list/inquiry",catchAsync(listEnquiry));
 router.get("/auth/getbyid/inquiry/:_id",catchAsync(getspecificinquiry));

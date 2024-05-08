@@ -3,10 +3,10 @@ const SupplierDetailSchema = require("../../models/Supplier/Supplier");
 
 exports.createSupplier = async (req, res) => {
   try {
-    let { IsActive,Website1,EmailID_Sales,EmailID_Office,EmailID_Support,ContactNo_Office,ContactNo_Support,ContactNo_Sales,Pincode,Country,State,City,Address2,Address1,SupplierName } = req.body;
+    let { IsActive,EmailID_Office,ContactNo_Office,Country,CompanyName,SupplierName } = req.body;
 
     const newProject = await new SupplierDetailSchema({
-        IsActive,Website1,EmailID_Sales,EmailID_Office,EmailID_Support,ContactNo_Office,ContactNo_Support,ContactNo_Sales,Pincode,Country,State,City,Address2,Address1,SupplierName
+      IsActive,EmailID_Office,ContactNo_Office,Country,CompanyName,SupplierName 
     }).save();
 
     res.status(200).json({
@@ -23,7 +23,7 @@ exports.createSupplier = async (req, res) => {
 
 exports.updateSupplier = async (req, res) => {
   try {
-    let { IsActive,Website1,EmailID_Sales,EmailID_Office,EmailID_Support,ContactNo_Office,ContactNo_Support,ContactNo_Sales,Pincode,Country,State,City,Address2,Address1,SupplierName } = req.body;
+    let { IsActive,EmailID_Office,ContactNo_Office,Country,CompanyName,SupplierName  } = req.body;
 
     const update = await SupplierDetailSchema.findOneAndUpdate(
       { _id: req.params._id },
@@ -103,7 +103,9 @@ exports.listSupplierDetailByParams = async (req, res) => {
                 SupplierName: new RegExp(match, "i"),
             },
             {
-                City: new RegExp(match, "i"),
+              CompanyName: new RegExp(match, "i"),
+            },{
+              Country: new RegExp(match, "i"),
             }
           ],
         },

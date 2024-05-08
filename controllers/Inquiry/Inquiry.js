@@ -1,42 +1,47 @@
 const Inquiry = require("../../models/Inquiry/Inquiry");
 exports.createInquiry = async (req, res) => {
-  
   try {
-    // let imageURL = req.file
-    // ? `uploads/InquiryDetails/${req.file.filename}`
-    //   : null;
-    let { IsActive,mobile_no,product,email,Name} = req.body;
-
-
-
-    const newProject = await new Inquiry({
-mobile_no,product,email,Name,IsActive
-    //   imageURL
+    let { IsActive , Mobile, ProductDetail, Email, CompanyName, ContactPerson, Reference, Address, Country, Phone, Fax, Comments ,Status,
+      RFQ_Status,
+      Quote} = req.body;
+      if(Country===""){
+        Country="INDIA"
+      }
+    const newInquiry = await new Inquiry({
+      ProductDetail ,
+       
+      ContactPerson,
+      CompanyName,
+      Reference,
+      Address,
+      Country,
+      Phone,
+      Fax,
+      Mobile,
+      Email,
+      Comments,
+      IsActive,
+      Status,
+      RFQ_Status,
+      Quote
     }).save();
 
     res.status(200).json({
       isOk: true,
-      data: newProject,
+      data: newInquiry,
       message: "New Inquiry created successfully",
     });
   } catch (err) {
     console.error(err);
     res.status(500).json({ isOk: false, error: "Internal server error" });
   }
-
 };
+
 
 exports.listEnquiry = async (req, res) => {
   try {
     const list = await Inquiry.aggregate([
-        {
-          $lookup: {
-            from: 'servicetypeschemas',
-            localField: 'product', 
-            foreignField: '_id',  
-            as: 'serviceTypeDetails'
-          }
-        },
+        
         {
           $sort: { createdAt: -1 }
         }
@@ -98,21 +103,15 @@ exports.updateInquiryDetail = async (req, res) => {
         // let imageURL = req.file
         // ? `uploads/ProjectDetailImages/${req.file.filename}`
         //   : req.body.imageURL;
-        let {IsActive,mobile_no,product,email,Name} = req.body;
+        let {IsActive , Mobile, ProductDetail, Email, CompanyName, ContactPerson, Reference, Address, Country, Phone, Fax, Comments ,Status,
+          RFQ_Status,
+          Quote} = req.body;
     
        
 
         const update = await Inquiry.findOneAndUpdate(
             { _id: req.params._id },
-            { $set: { 
-                "mobile_no": req.body.mobile_no,
-                "IsActive": req.body.IsActive,
-                "product": req.body.product,
-                // "Detail": Detail,
-                "email": req.body.email,
-                "Name":req.body.Name
-
-                 } },
+            req.body,
             { new: true }
           );
     
@@ -138,17 +137,10 @@ exports.removeInquiryDetail = async (req, res) => {
 };
 
 
-
+ 
 exports.listInquiryDetailsByParams = async (req, res) => {
   try {
     let { skip, per_page, sorton, sortdir, match, IsActive } = req.body;
-    console.log("Received skip:", skip);
-    console.log("Received per_page:", per_page);
-    console.log("Received IsActive:", IsActive);
-
-    // if (!skip || !per_page || !IsActive) {
-    //   return res.status(400).send("Skip, per_page, and IsActive are required");
-    // }
 
     let query = [
       {
@@ -156,30 +148,21 @@ exports.listInquiryDetailsByParams = async (req, res) => {
       },
       {
         $lookup: {
-          from: "servicetypeschemas",
-          localField: "product",
+          from: "inquiryproducts",
+          localField: "ProductDetail",
           foreignField: "_id",
-          as: "serviceTypeDetails",
+          as: "InquiryDetails",
         },
       },
-      {
-        $unwind: {
-          path: "$servicetypeschemas",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $match: {
-          $or: [
-            {
-              "serviceTypeDetails.0.ServiceName": new RegExp(match, "i"),
-            },
-            {
-                Name: new RegExp(match, "i"),
-            }
-          ],
-        },
-      },
+       
+      // {
+      //   $match: {
+      //     $or: [
+      //       { "InquiryDetails.0.ContactPerson": new RegExp(match, "i") },
+             
+      //     ],
+      //   },
+      // },
       {
         $sort: { createdAt: -1 },
       },
@@ -196,62 +179,89 @@ exports.listInquiryDetailsByParams = async (req, res) => {
             },
           ],
           stage2: [
-            {
-              $skip: parseInt(skip),
-            },
-            {
-              $limit: parseInt(per_page),
-            },
+            { $skip: parseInt(skip) },
+            { $limit: parseInt(per_page) },
           ],
         },
       },
       {
-        $unwind: {
-          path: "$stage1",
-        },
+        $unwind: "$stage1",
       },
       {
         $project: {
           count: "$stage1.count",
           data: "$stage2",
-          serviceTypeDetails: { $arrayElemAt: ["$serviceTypeDetails", 0] },
-
         },
-      },
+      },  
     ];
 
-   
     if (sorton && sortdir) {
       let sort = {};
       sort[sorton] = sortdir == "desc" ? -1 : 1;
-      query.unshift({
-        $sort: sort,
-      });
+      query.unshift({ $sort: sort });
     } else {
-      let sort = {};
-      sort["createdAt"] = -1;
-      query.unshift({
-        $sort: sort,
-      });
+      query.unshift({ $sort: { createdAt: -1 } });
     }
 
     const list = await Inquiry.aggregate(query);
     res.json(list);
   } catch (error) {
-    console.error("Error in listProjectDetailByParams:", error);
+    console.error("Error in listAssignProductByParams:", error);
     res.status(500).send("Internal Server Error");
   }
 };
 
 
+// exports.getspecificinquiry=async(req,res)=>{
+//     try{
+//         const specificinquity=await Inquiry.findOne({_id:req.params}).populate({
+//           path:"ProductDetail",select: "-_id"
+//         });
+//         res.status(200).send(specificinquity)
 
-exports.getspecificinquiry=async(req,res)=>{
-    try{
-        const specificinquity=await Inquiry.findOne({_id:req.params});
-        res.status(200).send(specificinquity)
+//     }
+//     catch(error){
+//         res.status(500).send(error)
+//     }
+// }
 
-    }
-    catch(error){
-        res.status(500).send(error)
-    }
+// exports.getspecificinquiry = async (req, res) => {
+//   try {
+//       const specificinquiry = await Inquiry.aggregate([
+//           { 
+//               $match: {
+//                   _id: req.params // Assuming req.params contains the ID of the specific inquiry
+//               }
+//           },
+//           // { 
+//           //     $lookup: {
+//           //         from: "inquiryproducts",
+//           //         localField: "ProductDetail",
+//           //         foreignField: "_id",
+//           //         as: "InquiryDetails"
+//           //     }
+//           // }
+//       ]);
+      
+//       res.status(200).send(specificinquiry);
+//   } catch(error) {
+//       res.status(500).send(error);
+//   }
+// }
+
+exports.getspecificinquiry = async (req, res) => {
+  try {
+      const specificinquiry = await Inquiry.findById(req.params) // Assuming req.params contains the ID of the specific inquiry
+                                      .populate('ProductDetail'); // Use populate to perform a lookup on the ProductDetail field
+      
+      if (!specificinquiry) {
+          return res.status(404).send("Inquiry not found");
+      }
+      
+      res.status(200).send(specificinquiry);
+  } catch(error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
+  }
 }
+
