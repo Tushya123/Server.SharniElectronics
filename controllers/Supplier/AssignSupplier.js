@@ -315,7 +315,7 @@ exports.getAssignProductById=async(req,res)=>{
       console.log(inquiries.ProductDetail)
       const excelData = inquiries.ProductDetail.map((inquiry) => {
         const productDetail = {
-          Description: inquiry.Description,
+          ProductName: inquiry.Description,
           ProductGroup: inquiry.ProductDetail.ProductGroup
         };
   
