@@ -16,7 +16,7 @@ exports.createAdminUser = async (req, res) => {
     if (!fs.existsSync(`${__basedir}/uploads/userImages`)) {
       fs.mkdirSync(`${__basedir}/uploads/userImages`);
     }
-
+    console.log(req.file)
     let bannerImage = req.file
       ? `uploads/userImages/${req.file.filename}`
       : null;

@@ -1,10 +1,20 @@
 const ProductGroupSchema = require("../../models/ProductGroup/ProductGroup");
 const proddetails = require("../../models/ProductDetail/ProductDetail");
+const fs=require("fs");
 
 exports.createAreatype = async (req, res) => {
   try {
-    const { ProductGroup, IsActive } = req.body;
-    const addAreatype = await new ProductGroupSchema(req.body).save();
+    if (!fs.existsSync(`${__basedir}/uploads/ProductGroupImages`)) {
+      fs.mkdirSync(`${__basedir}/uploads/ProductGroupImages`);
+    }
+    console.log(req.file)
+    let ImageUrl = req.file
+    ? `uploads/ProductGroupImages/${req.file.filename}`
+    : null;
+    let { ProductGroup, IsActive } = req.body;
+    const addAreatype = await new ProductGroupSchema({
+      ProductGroup,IsActive,ImageUrl:ImageUrl}
+    ).save();
     res.status(200).json({ isOk: true, data: addAreatype, message: "" });
   } catch (err) {
     res.status(200).json({ isOk: false, message: "Error creating Product Group" });
@@ -34,9 +44,16 @@ exports.listActiveAreatype = async (req, res) => {
 
 exports.updateAreatype = async (req, res) => {
   try {
+    let bannerImage = req.file
+      ? `uploads/ProductGroupImages/${req.file.filename}`
+      : null;
+    let fieldvalues = { ...req.body };
+    if (bannerImage != null) {
+      fieldvalues.ImageUrl = bannerImage;
+    }
     const update = await ProductGroupSchema.findOneAndUpdate(
       { _id: req.params._id },
-      { $set: { "ProductGroup": req.body.ProductGroup, "IsActive": req.body.IsActive } },
+      fieldvalues,
       { new: true }
     );
     res.json(update);
@@ -142,3 +159,14 @@ exports.listAreatypesByParams = async (req, res) => {
     res.status(500).send(error);
   }
 };
+
+exports.getProductGroup = async (req, res) => {
+  try {
+    const find = await ProductGroupSchema.findOne({ _id: req.params._id }).exec();
+    res.json(find);
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+};
+
+
