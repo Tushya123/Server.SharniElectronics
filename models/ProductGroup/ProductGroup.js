@@ -4,6 +4,9 @@ const ProductGroupSchema = new mongoose.Schema(
     ProductGroup: {
       type: String,
     },
+    ImageUrl:{
+      type:String
+    },
     IsActive: {
         type: Boolean,
     },

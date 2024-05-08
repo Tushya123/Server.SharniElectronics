@@ -7,31 +7,31 @@ const { createProjectDetail, listProjectDetail, updateProjectDetail, removeProje
 
 const router = express.Router();
 
-// const uploadDirectory = "uploads/ProjectDetailImages";
-// if (!fs.existsSync(uploadDirectory)) {
-//   fs.mkdirSync(uploadDirectory, { recursive: true });
-// }
+const uploadDirectory = "uploads/ProductDetailImages";
+if (!fs.existsSync(uploadDirectory)) {
+  fs.mkdirSync(uploadDirectory, { recursive: true });
+}
 
-// const multerStorage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, uploadDirectory);
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, Date.now() + "_" + file.originalname);
-//   },
-// });
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDirectory);
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "_" + file.originalname);
+  },
+});
 
-const upload = multer();
+const upload = multer({ storage: multerStorage });
 
 router.post(
   "/auth/create/projectdetail",
-  upload.none(), 
+  upload.single("ImageUrl"), 
   catchAsync(createProjectDetail)
 );
 
 router.put(
     "/auth/update/projectdetail/:_id",
-    upload.none(),
+    upload.single("ImageUrl"),
     catchAsync(updateProjectDetail)
   );
 

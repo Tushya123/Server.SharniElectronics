@@ -1,13 +1,20 @@
 const proddetails = require("../../models/ProductDetail/ProductDetail");
-
+const fs = require("fs");
 exports.createProjectDetail = async (req, res) => {
   try {
+    if (!fs.existsSync(`${__basedir}/uploads/ProductDetailImages`)) {
+      fs.mkdirSync(`${__basedir}/uploads/ProductDetailImages`);
+    }
+    let bannerImage = req.file
+    ? `uploads/ProductDetailImages/${req.file.filename}`
+    : null;
     let { Detail,ProductDetail, Description, IsActive } = req.body;
 
     const newProject = await new proddetails({
       ProductDetail,
       Description,
       Detail,
+      ImageUrl:bannerImage,
       IsActive,
     
     }).save();
@@ -30,18 +37,17 @@ const upload = multer();
 
 exports.updateProjectDetail = async (req, res) => {
   try {
-    let { Detail,ProductDetail, Description, IsActive } = req.body;
+    let bannerImage = req.file
+      ? `uploads/ProductDetailImages/${req.file.filename}`
+      : null;
+    let fieldvalues = { ...req.body };
+    if (bannerImage != null) {
+      fieldvalues.ImageUrl = bannerImage;
+    }
 
     const update = await proddetails.findOneAndUpdate(
       { _id: req.params._id },
-      {
-        $set: {
-          "ProductDetail": ProductDetail,
-          "Detail": Detail,
-          "IsActive": IsActive,
-          "Description": Description,
-        }
-      },
+      fieldvalues,
       { new: true }
     );
 

@@ -11,6 +11,9 @@ const ProductDetailSchema = new mongoose.Schema(
     Detail:{
       type:String
     },
+    ImageUrl:{
+      type:String
+    },
  
     IsActive: {
         type: Boolean,

@@ -25,7 +25,7 @@ const upload = multer({ storage: multerStorage });
 
 router.post(
   "/auth/create/GalleryPhoto",
-  upload.single("newImage"),
+  upload.single("imageURL"),
   catchAsync(createGalleryPhoto)
 );
 router.get(
@@ -35,7 +35,7 @@ router.get(
 
 router.put(
     "/auth/update/GalleryPhoto/:_id",
-    upload.single("newImage"),
+    upload.single("imageURL"),
     catchAsync(updateGalleryPhotos)
   );
 

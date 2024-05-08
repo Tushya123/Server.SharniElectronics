@@ -60,7 +60,7 @@ exports.updateGalleryPhotos = async (req, res) => {
         console.log("rsrsrsrsrsrsrs",imageURL);
 
         const update = await GalleryPhotoSchema.findOneAndUpdate(
-            { _id: req.params._id },
+            { _id: req.params },
             { $set: { 
                 "Category": Category,
                 "IsActive": IsActive,
