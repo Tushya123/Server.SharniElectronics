@@ -38,7 +38,7 @@ router.get("/auth/get/cms/:id", catchAsync(getcmsById));
 // // // Route for updating a category
 router.put(
   "/auth/update/cms/:id",
-  upload.single("myFile"),
+  upload.single("cmsImage"),
   catchAsync(updatecms)
 );
 
