@@ -315,7 +315,7 @@ exports.getAssignProductById=async(req,res)=>{
       console.log(inquiries.ProductDetail)
       const excelData = inquiries.ProductDetail.map((inquiry) => {
         const productDetail = {
-          Description: inquiry.Description,
+          ProductName: inquiry.Description,
           ProductGroup: inquiry.ProductDetail.ProductGroup
         };
   
@@ -330,7 +330,7 @@ exports.getAssignProductById=async(req,res)=>{
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet("Supplier Wise Product");
       worksheet.columns = [
-        { header: "Description", key: "Description", width: 20 }, // Add Description column
+        { header: "ProductName", key: "ProductName", width: 20 }, // Add Description column
         { header: "Product Group", key: "ProductGroup", width: 20 } // Add ProductGroup column
       ];
   
