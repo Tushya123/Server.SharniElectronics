@@ -100,6 +100,7 @@ exports.downloadProductInquiryByParamsandDate = async (req, res) => {
         { header: "Mobile", key: "Mobile" },
         { header: "Email", key: "Email" },
         { header: "Country", key: "Country" },
+        { header: "CompanyName", key: "CompanyName" },
        
       ];
   
@@ -114,6 +115,7 @@ exports.downloadProductInquiryByParamsandDate = async (req, res) => {
           Mobile: item.Mobile,
           Email: item.Email,
           Country: item.Country,
+          CompanyName: item.CompanyName,
          
         });
       });
