@@ -138,6 +138,86 @@ exports.removeInquiryDetail = async (req, res) => {
 
 
  
+exports.listInquiryDetailsByParamsfordate = async (req, res) => {
+  try {
+    let { skip, per_page, sorton, sortdir, match, IsActive, createdAt } = req.body;
+
+    let query = [
+      {
+        $match: { IsActive: IsActive },
+      },
+      // Add a match stage for createdAt
+      {
+        $match: {
+          createdAt: {
+            $gte: new Date(createdAt.$gte),
+            $lte: new Date(createdAt.$lte),
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "inquiryproducts",
+          localField: "ProductDetail",
+          foreignField: "_id",
+          as: "InquiryDetails",
+        },
+      },
+      // {
+      //   $match: {
+      //     $or: [
+      //       { "InquiryDetails.0.ContactPerson": new RegExp(match, "i") },
+             
+      //     ],
+      //   },
+      // },
+      {
+        $sort: { createdAt: -1 },
+      },
+      {
+        $facet: {
+          stage1: [
+            {
+              $group: {
+                _id: null,
+                count: {
+                  $sum: 1,
+                },
+              },
+            },
+          ],
+          stage2: [
+            { $skip: parseInt(skip) },
+            { $limit: parseInt(per_page) },
+          ],
+        },
+      },
+      {
+        $unwind: "$stage1",
+      },
+      {
+        $project: {
+          count: "$stage1.count",
+          data: "$stage2",
+        },
+      },  
+    ];
+
+    if (sorton && sortdir) {
+      let sort = {};
+      sort[sorton] = sortdir == "desc" ? -1 : 1;
+      query.unshift({ $sort: sort });
+    } else {
+      query.unshift({ $sort: { createdAt: -1 } });
+    }
+
+    const list = await Inquiry.aggregate(query);
+    res.json(list);
+  } catch (error) {
+    console.error("Error in listAssignProductByParams:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
 exports.listInquiryDetailsByParams = async (req, res) => {
   try {
     let { skip, per_page, sorton, sortdir, match, IsActive } = req.body;

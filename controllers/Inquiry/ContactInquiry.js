@@ -106,6 +106,100 @@ exports.listContactInquiryByParams = async (req, res) => {
     res.status(500).send(error);
   }
 };
+exports.listContactInquiryByParamsdate = async (req, res) => {
+  try {
+    let { skip, per_page, sorton, sortdir, match,IsActive,createdAt } = req.body;
+
+    let query = [
+      {
+        $match: { IsActive: IsActive },
+      },
+      {
+        $match: {
+          createdAt: {
+            $gte: new Date(createdAt.$gte),
+            $lte: new Date(createdAt.$lte),
+          },
+        },
+      },
+
+      {
+        $facet: {
+          stage1: [
+            {
+              $group: {
+                _id: null,
+                count: {
+                  $sum: 1,
+                },
+              },
+            },
+          ],
+          stage2: [
+            {
+              $skip: skip,
+            },
+            {
+              $limit: per_page,
+            },
+          ],
+        },
+      },
+      {
+        $unwind: {
+          path: "$stage1",
+        },
+      },
+      {
+        $project: {
+          count: "$stage1.count",
+          data: "$stage2",
+        },
+      },
+    ];
+    if (match) {
+      query = [
+        {
+          $match: {
+            $or: [
+              {
+                ContactPerson: { $regex: match, $options: "i" },
+              },{
+                Email: { $regex: match, $options: "i" },
+              },{
+                Mobile: { $regex: match, $options: "i" },
+              },
+            ],
+          },
+        },
+      ].concat(query);
+    }
+
+    if (sorton && sortdir) {
+      let sort = {};
+      sort[sorton] = sortdir == "desc" ? -1 : 1;
+      query = [
+        {
+          $sort: sort,
+        },
+      ].concat(query);
+    } else {
+      let sort = {};
+      sort["createdAt"] = -1;
+      query = [
+        {
+          $sort: sort,
+        },
+      ].concat(query);
+    }
+
+    const list = await contact.aggregate(query);
+
+    res.json(list);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
 
 
 exports.updatecontactinquiry=async(req,res)=>{

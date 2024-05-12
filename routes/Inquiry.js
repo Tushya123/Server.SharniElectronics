@@ -3,7 +3,7 @@ const catchAsync=require("../utils/catchAsync");
 
 const multer = require("multer");
 
-const {createInquiry,listEnquiry,listActiveInquiryDetails,updateInquiryDetail,removeInquiryDetail,listInquiryDetailsByParams,getspecificinquiry}=require("../controllers/Inquiry/Inquiry")
+const {createInquiry,listEnquiry,listActiveInquiryDetails,updateInquiryDetail,removeInquiryDetail,listInquiryDetailsByParams,getspecificinquiry,listInquiryDetailsByParamsfordate}=require("../controllers/Inquiry/Inquiry")
 const router=express.Router();
 
 const upload = multer();
@@ -11,6 +11,7 @@ router.post("/auth/create/inquiry",
 upload.none(),catchAsync(createInquiry));
 
 router.post("/auth/list-by-params/inquiry",catchAsync(listInquiryDetailsByParams));
+router.post("/auth/list-by-params-date/inquiry",catchAsync(listInquiryDetailsByParamsfordate));
 router.get("/auth/list/inquiry",catchAsync(listEnquiry));
 router.get("/auth/getbyid/inquiry/:_id",catchAsync(getspecificinquiry));
 router.put("/auth/update/inquiry/:_id",catchAsync(updateInquiryDetail)); //Here the _id is to be checked with the _id which is in the controller i.e _id:req.params
