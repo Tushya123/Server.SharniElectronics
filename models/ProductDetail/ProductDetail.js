@@ -1,27 +1,31 @@
 const mongoose = require("mongoose");
+
 const ProductDetailSchema = new mongoose.Schema(
   {
     ProductDetail: {
       type: mongoose.Schema.Types.ObjectId,
-      ref:"productgroup"
+      ref: "productgroup"
     },
     Description: {
-        type: String,
+      type: String,
     },
-    Detail:{
-      type:String
+    Detail: {
+      type: String
     },
-    ImageUrl:{
-      type:String
+    ImageUrl: {
+      type: String
     },
-    ProductDetailDescription:[
-      {type:String}
+    ProductDetailDescriptionKey: [
+      
+        
+      
+    ],ProductDetailDescriptionValue: [
+      
+        
+      
     ],
-
-    
- 
     IsActive: {
-        type: Boolean,
+      type: Boolean,
     },
   },
   { timestamps: true }

@@ -5,19 +5,34 @@ exports.createProjectDetail = async (req, res) => {
     if (!fs.existsSync(`${__basedir}/uploads/ProductDetailImages`)) {
       fs.mkdirSync(`${__basedir}/uploads/ProductDetailImages`);
     }
-    let bannerImage = req.file
-    ? `uploads/ProductDetailImages/${req.file.filename}`
-    : null;
-    let { Detail,ProductDetail, Description, IsActive,ProductDetailDescription } = req.body;
+    let bannerImage = req.file ? `uploads/ProductDetailImages/${req.file.filename}` : null;
+    let { Detail, ProductDetail, Description, IsActive, ProductDetailDescriptionKey,ProductDetailDescriptionValue } = req.body;
+    console.log(typeof ProductDetailDescription)
+    const keyArray = ProductDetailDescriptionKey.split(',').map(typology => typology.trim());
+const valueArray = ProductDetailDescriptionValue.split(',').map(typology => typology.trim());
+
+// Flatten the arrays
+const flattenedKeyArray = keyArray.flat();
+const flattenedValueArray = valueArray.flat();
+
+// Assuming you want to remove the escape characters ("\")
+  const sanitizedKeyArray = flattenedKeyArray.map(item => item.replace(/[\[\]"]+/g, ''));
+const sanitizedValueArray = flattenedValueArray.map(item => item.replace(/[\[\]"]+/g, ''));
+console.log(sanitizedKeyArray)
+console.log(sanitizedValueArray)
+    // ProductDetailDescriptionValue = ProductDetailDescriptionValue.split(',').map(typology => typology.trim());
+    // ProductDetailDescriptionKey = ProductDetailDescriptionKey.split(',').map(typology => typology.trim());
+    
+    // Assuming ProductDetailDescription is passed as a stringified JSON array
+ 
 
     const newProject = await new proddetails({
       ProductDetail,
       Description,
       Detail,
-      ImageUrl:bannerImage,
+      ImageUrl: bannerImage,
       IsActive,
-      ProductDetailDescription
-    
+      ProductDetailDescriptionValue:sanitizedValueArray,ProductDetailDescriptionKey:sanitizedKeyArray
     }).save();
 
     res.status(200).json({
@@ -30,6 +45,7 @@ exports.createProjectDetail = async (req, res) => {
     res.status(500).json({ isOk: false, error: err });
   }
 };
+
 
 const multer = require('multer');
 
