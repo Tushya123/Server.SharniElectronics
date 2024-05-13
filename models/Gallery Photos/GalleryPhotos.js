@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const GalleryPhotoSchema = new mongoose.Schema(
   {
     Category: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref:"Category"
     },
     imageURL: {
