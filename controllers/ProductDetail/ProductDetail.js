@@ -8,7 +8,7 @@ exports.createProjectDetail = async (req, res) => {
     let bannerImage = req.file
     ? `uploads/ProductDetailImages/${req.file.filename}`
     : null;
-    let { Detail,ProductDetail, Description, IsActive } = req.body;
+    let { Detail,ProductDetail, Description, IsActive,ProductDetailDescription } = req.body;
 
     const newProject = await new proddetails({
       ProductDetail,
@@ -16,6 +16,7 @@ exports.createProjectDetail = async (req, res) => {
       Detail,
       ImageUrl:bannerImage,
       IsActive,
+      ProductDetailDescription
     
     }).save();
 
