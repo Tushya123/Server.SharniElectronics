@@ -6,33 +6,42 @@ exports.createProjectDetail = async (req, res) => {
       fs.mkdirSync(`${__basedir}/uploads/ProductDetailImages`);
     }
     let bannerImage = req.file ? `uploads/ProductDetailImages/${req.file.filename}` : null;
-    let { Detail, ProductDetail, Description, IsActive, ProductDetailDescriptionKey,ProductDetailDescriptionValue } = req.body;
+    let {  ProductDetail, Description, IsActive, ProductDetailDescription } = req.body;
     console.log(typeof ProductDetailDescription)
-    const keyArray = ProductDetailDescriptionKey.split(',').map(typology => typology.trim());
-const valueArray = ProductDetailDescriptionValue.split(',').map(typology => typology.trim());
+//     const keyArray = ProductDetailDescriptionKey.split(',').map(typology => typology.trim());
+// const valueArray = ProductDetailDescriptionValue.split(',').map(typology => typology.trim());
 
-// Flatten the arrays
-const flattenedKeyArray = keyArray.flat();
-const flattenedValueArray = valueArray.flat();
+// // Flatten the arrays
+// const flattenedKeyArray = keyArray.flat();
+// const flattenedValueArray = valueArray.flat();
 
-// Assuming you want to remove the escape characters ("\")
-  const sanitizedKeyArray = flattenedKeyArray.map(item => item.replace(/[\[\]"]+/g, ''));
-const sanitizedValueArray = flattenedValueArray.map(item => item.replace(/[\[\]"]+/g, ''));
-console.log(sanitizedKeyArray)
-console.log(sanitizedValueArray)
+// // Assuming you want to remove the escape characters ("\")
+//   const sanitizedKeyArray = flattenedKeyArray.map(item => item.replace(/[\[\]"]+/g, ''));
+// const sanitizedValueArray = flattenedValueArray.map(item => item.replace(/[\[\]"]+/g, ''));
+// console.log(sanitizedKeyArray)
+// console.log(sanitizedValueArray)
     // ProductDetailDescriptionValue = ProductDetailDescriptionValue.split(',').map(typology => typology.trim());
     // ProductDetailDescriptionKey = ProductDetailDescriptionKey.split(',').map(typology => typology.trim());
     
     // Assuming ProductDetailDescription is passed as a stringified JSON array
+    const newMetalDetails = JSON.parse(ProductDetailDescription);
+    const extractedObjects = [];
+
+    newMetalDetails.forEach((nestedArray) => {
+      if (nestedArray && nestedArray.length > 0) {
+        const extractedObject = nestedArray[0]; // Assuming there's only one object in each nested array
+        extractedObjects.push(extractedObject);
+      }
+    });
  
 
     const newProject = await new proddetails({
       ProductDetail,
       Description,
-      Detail,
+      
       ImageUrl: bannerImage,
       IsActive,
-      ProductDetailDescriptionValue:sanitizedValueArray,ProductDetailDescriptionKey:sanitizedKeyArray
+      ProductDetailDescription:extractedObjects
     }).save();
 
     res.status(200).json({
@@ -61,6 +70,15 @@ exports.updateProjectDetail = async (req, res) => {
     if (bannerImage != null) {
       fieldvalues.ImageUrl = bannerImage;
     }
+    const newMetalDetails = JSON.parse(fieldvalues.ProductDetailDescription);
+    const extractedObjects = [];
+    newMetalDetails.forEach((nestedArray) => {
+      if (nestedArray && nestedArray.length > 0) {
+        const extractedObject = nestedArray[0]; // Assuming there's only one object in each nested array
+        extractedObjects.push(extractedObject);
+      }
+    });
+    fieldvalues["ProductDetailDescription"] = extractedObjects;
 
     const update = await proddetails.findOneAndUpdate(
       { _id: req.params._id },
@@ -210,5 +228,15 @@ exports.listProjectDetail=async(req,res)=>{
   catch(err){
     res.status(500).send(err);
 
+  }
+}
+
+exports.getspecificProductDetail=async(req,res)=>{
+  try{
+const list=await proddetails.findOne({_id:req.params})
+res.status(200).send(list)
+  }
+  catch(err){
+    res.status(500).send(err)
   }
 }

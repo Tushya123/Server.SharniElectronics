@@ -9,18 +9,20 @@ const ProductDetailSchema = new mongoose.Schema(
     Description: {
       type: String,
     },
-    Detail: {
-      type: String
-    },
+   
     ImageUrl: {
       type: String
     },
-    ProductDetailDescriptionKey: [
-      
+    ProductDetailDescription:[
+      {
+        ProductKey: {
+          type: String,
+        },
+        ProductValue: {
+          type: String,
+        },
         
-      
-    ],ProductDetailDescriptionValue: [
-      
+      },
         
       
     ],
