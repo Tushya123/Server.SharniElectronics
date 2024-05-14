@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
 const catchAsync = require("../utils/catchAsync");
-const { createProjectDetail, listProjectDetail, updateProjectDetail, removeProjectDetail, listProjectDetailByParams } = require("../controllers/ProductDetail/ProductDetail");
+const { createProjectDetail, listProjectDetail, updateProjectDetail, removeProjectDetail, listProjectDetailByParams,getspecificProductDetail } = require("../controllers/ProductDetail/ProductDetail");
 
 
 const router = express.Router();
@@ -25,19 +25,23 @@ const upload = multer({ storage: multerStorage });
 
 router.post(
   "/auth/create/projectdetail",
-  upload.single("ImageUrl"), 
+  upload.single("ProductImage"), 
   catchAsync(createProjectDetail)
 );
 
 router.put(
     "/auth/update/projectdetail/:_id",
-    upload.single("ImageUrl"),
+    upload.single("ProductImage"),
     catchAsync(updateProjectDetail)
   );
 
 router.get(
     "/auth/list/projectdetail",
     catchAsync(listProjectDetail)
+  );
+  router.get(
+    "/auth/getspecific/projectdetail/:_id",
+    catchAsync(getspecificProductDetail)
   );
 
 router.delete(
