@@ -41,7 +41,7 @@ exports.listGalleryPhotos = async (req, res) => {
         {
           $sort: { createdAt: -1 }
         }
-      ])
+      ]);
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
