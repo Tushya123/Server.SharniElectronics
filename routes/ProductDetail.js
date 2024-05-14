@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
 const catchAsync = require("../utils/catchAsync");
-const { createProjectDetail, listProjectDetail, updateProjectDetail, removeProjectDetail, listProjectDetailByParams,getspecificProductDetail } = require("../controllers/ProductDetail/ProductDetail");
+const { createProjectDetail, listProjectDetail, updateProjectDetail, removeProjectDetail, listProjectDetailByParams,getspecificProductDetail , getProductByDescription } = require("../controllers/ProductDetail/ProductDetail");
 
 
 const router = express.Router();
@@ -78,4 +78,11 @@ router.delete(
       res.json({ url: req.file.filename });
     }
   );
+
+  router.get(
+    "/auth/get/productdetail/:description",
+    catchAsync(getProductByDescription)
+  );
+
+
 module.exports = router;

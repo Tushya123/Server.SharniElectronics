@@ -240,3 +240,15 @@ res.status(200).send(list)
     res.status(500).send(err)
   }
 }
+
+exports.getProductByDescription = async (req, res) => {
+  try {
+    const product = await proddetails.findOne({ Description: req.params.description });
+    if (!product) {
+      return res.status(404).send({ message: 'Product not found' });
+    }
+    res.status(200).send(product);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
