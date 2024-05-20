@@ -179,6 +179,94 @@ exports.removeAssignProduct = async (req, res) => {
 
 
 
+exports.listAssignProductByParamsforReport = async (req, res) => {
+  try {
+    let { skip, per_page, sorton, sortdir, match, isActive } = req.body;
+
+    let query = [
+      {
+        $match: { isActive: isActive, SupplierName: new mongoose.Types.ObjectId(req.params) },
+      },
+      {
+        $lookup: {
+          from: "productdetails",
+          localField: "ProductDetail",
+          foreignField: "_id",
+          as: "ProductDetailTypes",
+        },
+      },
+      {
+        $lookup: {
+          from: "supplierdetails",
+          localField: "SupplierName",
+          foreignField: "_id",
+          as: "SupplierDetailTypes",
+        },
+      },
+      {
+        $addFields: {
+          productDetailCount: { $size: "$ProductDetailTypes" },
+        },
+      },
+      {
+        $match: {
+          $or: [
+            { "ProductDetailTypes.ProductDetail": { $regex: match, $options: "i" } },
+            { "SupplierDetailTypes.SupplierName": { $regex: match, $options: "i" } },
+          ],
+        },
+      },
+      {
+        $sort: { createdAt: -1 },
+      },
+      {
+        $facet: {
+          stage1: [
+            {
+              $group: {
+                _id: null,
+                count: { $sum: 1 },
+              },
+            },
+          ],
+          stage2: [
+            {
+              $addFields: {
+                ProductDetailTypes: {
+                  $slice: ["$ProductDetailTypes", parseInt(skip), parseInt(per_page)],
+                },
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unwind: "$stage1",
+      },
+      {
+        $project: {
+          count: "$stage1.count",
+          data: "$stage2",
+        },
+      },
+    ];
+
+    if (sorton && sortdir) {
+      let sort = {};
+      sort[sorton] = sortdir === "desc" ? -1 : 1;
+      query.unshift({ $sort: sort });
+    } else {
+      query.unshift({ $sort: { createdAt: -1 } });
+    }
+
+    const list = await assignproduct.aggregate(query);
+    res.json(list);
+  } catch (error) {
+    console.error("Error in listAssignProductByParams:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
 exports.listAssignProductByParams = async (req, res) => {
   try {
     let { skip, per_page, sorton, sortdir, match, isActive } = req.body;
@@ -258,6 +346,8 @@ exports.listAssignProductByParams = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
+
 
 exports.listAssignProduct=async(req,res)=>{
   try{
