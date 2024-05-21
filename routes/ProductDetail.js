@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
 const catchAsync = require("../utils/catchAsync");
-const { createProjectDetail, listProjectDetail, updateProjectDetail, removeProjectDetail, listProjectDetailByParams,getspecificProductDetail , getProductByDescription } = require("../controllers/ProductDetail/ProductDetail");
+const {listProjectDetailByParamsSearch, createProjectDetail, listProjectDetail, updateProjectDetail, removeProjectDetail, listProjectDetailByParams,getspecificProductDetail , getProductByDescription } = require("../controllers/ProductDetail/ProductDetail");
 
 
 const router = express.Router();
@@ -54,6 +54,13 @@ router.delete(
     "/auth/listprojectdetailbyparam",
     
     catchAsync(listProjectDetailByParams)
+  );
+
+  
+  router.post(
+    "/auth/listProjectDetailByParamsSearch",
+    
+    catchAsync(listProjectDetailByParamsSearch)
   );
 
   const multerStorageCK = multer.diskStorage({
