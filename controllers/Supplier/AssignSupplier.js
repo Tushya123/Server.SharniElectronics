@@ -211,8 +211,8 @@ exports.listAssignProductByParamsforReport = async (req, res) => {
       {
         $match: {
           $or: [
-            { "ProductDetailTypes.ProductDetail": { $regex: match, $options: "i" } },
-            { "SupplierDetailTypes.SupplierName": { $regex: match, $options: "i" } },
+            { "ProductDetailTypes.0.Description": { $regex: match, $options: "i" } },
+            
           ],
         },
       },
