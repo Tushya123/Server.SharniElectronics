@@ -1,4 +1,5 @@
 const proddetails = require("../../models/ProductDetail/ProductDetail");
+const supplierquote=require("../../models/SupplierQuote/SupplierQuote")
 const fs = require("fs");
 exports.createProjectDetail = async (req, res) => {
   try {
@@ -103,7 +104,7 @@ exports.removeProjectDetail = async (req, res) => {
     const delTL = await proddetails.findByIdAndDelete({
       _id: req.params._id,
     });
-    
+    await supplierquote.deleteMany({ProductDetail:req.params._id});
 
 
     res.json(delTL);
