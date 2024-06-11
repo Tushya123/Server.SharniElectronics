@@ -1,5 +1,7 @@
 const proddetails = require("../../models/ProductDetail/ProductDetail");
 const supplierquote=require("../../models/SupplierQuote/SupplierQuote")
+const PDFDocument = require("pdfkit");
+const path = require('path');
 const fs = require("fs");
 exports.createProjectDetail = async (req, res) => {
   try {
@@ -356,5 +358,138 @@ exports.getProductByDescription = async (req, res) => {
     res.status(200).send(product);
   } catch (err) {
     res.status(500).send(err);
+  }
+};
+
+const axios = require('axios');
+
+
+
+
+
+exports.downloadPdf = async (req, res, next) => {
+  try {
+    const { Description, ImageUrl, ProductDetailDescription } = req.body;
+
+    const doc = new PDFDocument();
+
+    // Set response headers to allow CORS
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
+    res.setHeader("Access-Control-Allow-Headers", "X-Requested-With,content-type");
+
+    // Set response headers for PDF content
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${Description}-${Date.now()}.pdf"`);
+
+    // Pipe the PDF content to the response
+    doc.pipe(res);
+
+    // Add the title
+    doc.fontSize(30).text(Description, { align: "center",underline:true });
+    doc.moveDown();
+
+    // Add the image if available
+    if (ImageUrl) {
+      const imageUrl = `${process.env.REACT_APP_API_URL_SHREEJI_PHARMACY}/${ImageUrl}`;
+      console.log("Downloading image from:", imageUrl);
+
+      const response = await axios({
+        url: imageUrl,
+        responseType: 'arraybuffer'
+      });
+
+      const tempImagePath = path.join(__dirname, `temp-image-${Date.now()}.jpg`);
+      fs.writeFileSync(tempImagePath, response.data);
+
+      if (fs.existsSync(tempImagePath)) {
+        doc.image(tempImagePath, {
+          fit: [400, 270],
+          align: 'center',
+          valign: 'center'
+        });
+        doc.moveDown();
+
+        // Delete the temp image after use
+        fs.unlinkSync(tempImagePath);
+      } else {
+        console.error("Image not found:", tempImagePath);
+      }
+    }
+    
+
+    // Add some space below the image
+    doc.moveDown(8);
+
+
+    // Add product details in tabular form
+    doc.fontSize(20).text("Product Details:", { underline: true,align:'center' });
+    doc.moveDown();
+
+    const tableTop = doc.y;
+    const tableLeft = 24;
+    const keyWidth = 200;
+    const valueWidth = 300;
+    const rowPadding = 14;
+
+    // Draw table headers with borders
+
+    // doc.rect(tableLeft, tableTop, keyWidth, 25 + rowPadding).stroke();
+    // doc.rect(tableLeft + keyWidth + 50, tableTop, valueWidth, 25 + rowPadding).stroke();
+
+    // doc.moveDown();
+
+    // Draw table rows with borders
+    ProductDetailDescription.forEach((detail, index) => {
+      const keyHeight = doc.heightOfString(detail.ProductKey, {
+        width: keyWidth - rowPadding * 2,
+      });
+      const valueHeight = doc.heightOfString(detail.ProductValue, {
+        width: valueWidth - rowPadding * 2,
+      });
+      const rowHeight = Math.max(keyHeight, valueHeight) + rowPadding * 2;
+
+      // Check if there is enough space for the next row, if not, add a new page
+      if (doc.y + rowHeight > doc.page.height - doc.page.margins.bottom) {
+        doc.addPage();
+        const newTableTop = doc.y;
+
+        // Draw table headers with borders on the new page
+       
+
+
+        doc.moveDown(2);
+      }
+
+      const y = doc.y;
+
+      // Draw the Product Key
+      doc.fontSize(12).text(detail.ProductKey, tableLeft + rowPadding, y + rowPadding, {
+        width: keyWidth - rowPadding * 2,
+        align: 'left'
+      });
+
+      // Draw the Product Value
+      doc.fontSize(12).text(detail.ProductValue, tableLeft + keyWidth + 50 + rowPadding, y + rowPadding, {
+        width: valueWidth - rowPadding * 2,
+        align: 'left'
+      });
+
+      // Draw borders for the row
+      doc.rect(tableLeft, y, keyWidth, rowHeight).stroke();
+      doc.rect(tableLeft + keyWidth + 50, y, valueWidth, rowHeight).stroke();
+
+      doc.moveDown(); // Move down after the row
+    });
+
+    // End the document
+    doc.end();
+
+    // Handle document errors
+    doc.on('error', (err) => {
+      next(err);
+    });
+  } catch (err) {
+    next(err);
   }
 };
