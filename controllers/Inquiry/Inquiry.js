@@ -1,4 +1,5 @@
 const Inquiry = require("../../models/Inquiry/Inquiry");
+const ExcelJS = require("exceljs");
 exports.createInquiry = async (req, res) => {
   try {
     let { IsActive , Mobile, ProductDetail, Email, CompanyName, ContactPerson, Reference, Address, Country, Phone, Fax, Comments ,Status,
@@ -344,4 +345,148 @@ exports.getspecificinquiry = async (req, res) => {
       res.status(500).send("Internal Server Error");
   }
 }
+exports.downloadProductInquiryByParamsandDate = async (req, res) => {
+  try {
+    let { skip, per_page, sorton, sortdir, match, IsActive, createdAt } = req.body;
+
+    let query = [
+      {
+        $match: { IsActive: IsActive },
+      },
+      {
+        $lookup: {
+          from: "inquiryproducts",
+          localField: "ProductDetail",
+          foreignField: "_id",
+          as: "InquiryDetails",
+        },
+      },
+      {
+        $facet: {
+          stage1: [
+            {
+              $group: {
+                _id: null,
+                count: {
+                  $sum: 1,
+                },
+              },
+            },
+          ],
+          stage2: [
+            {
+              $skip: skip ? parseInt(skip) : 0,
+            },
+            {
+              $limit: per_page ? parseInt(per_page) : 10,
+            },
+          ],
+        },
+      },
+      {
+        $unwind: {
+          path: "$stage1",
+        },
+      },
+      {
+        $project: {
+          count: "$stage1.count",
+          data: "$stage2",
+        },
+      },
+    ];
+
+    if (match) {
+      query = [
+        {
+          $match: {
+            $or: [
+              {
+                ContactPerson: { $regex: match, $options: "i" },
+              },
+              {
+                Email: { $regex: match, $options: "i" },
+              },
+            ],
+          },
+        },
+      ].concat(query);
+    }
+
+    if (sorton && sortdir) {
+      let sort = {};
+      sort[sorton] = sortdir == "desc" ? -1 : 1;
+      query = [
+        {
+          $sort: sort,
+        },
+      ].concat(query);
+    } else {
+      let sort = {};
+      sort["createdAt"] = -1;
+      query = [
+        {
+          $sort: sort,
+        },
+      ].concat(query);
+    }
+
+    const list = await Inquiry.aggregate(query);
+
+    let workbook = new ExcelJS.Workbook();
+    let worksheet = workbook.addWorksheet("Status Report");
+
+    // Add headers to the worksheet
+    worksheet.columns = [
+      { header: "Contact Person", key: "ContactPerson", width: 20 },
+      { header: "Company Name", key: "CompanyName", width: 30 },
+      { header: "Country", key: "Country", width: 15 },
+     
+      { header: "Email", key: "Email", width: 25 },
+      { header: "Mobile", key: "Mobile", width: 15 },
+      { header: "Inquiry Number", key: "InquiryNumber", width: 30 },
+     
+    
+      { header: "Product Detail", key: "ProductDetailLabel", width: 40 },
+      { header: "Product Group", key: "Group", width: 40 },
+      { header: "Product Quantity", key: "Quantity", width: 10 },
+    ];
+
+    // Adding data to the worksheet
+    list[0].data.forEach((item) => {
+      let firstEntry = true;
+      item.InquiryDetails.forEach((detail) => {
+        worksheet.addRow({
+          ContactPerson: firstEntry ? item.ContactPerson : '',
+          CompanyName: firstEntry ? item.CompanyName : '',
+          Mobile: firstEntry ? item.Mobile : '',
+          InquiryNumber: firstEntry ? item._id : '',
+          Email: firstEntry ? item.Email : '',
+          Country: firstEntry ? item.Country : '',
+          
+          ProductDetailLabel: detail.ProductDetailLabel,
+          Group: detail.Group,
+          Quantity: detail.Quantity,
+        });
+        firstEntry = false;
+      });
+      worksheet.addRow({});
+      worksheet.addRow({});
+    });
+
+    // Send the Excel file to the client
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader("Content-Disposition", "attachment; filename='report.xlsx'");
+
+    await workbook.xlsx.write(res).then(() => {
+      res.end();
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+};
 
