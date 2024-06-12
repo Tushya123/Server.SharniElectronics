@@ -511,7 +511,7 @@ ProductDetailDescription.forEach((detail, index) => {
 
   // Draw borders for the row
   doc.rect(tableLeft, y, keyWidth, rowHeight).strokeColor('#16436f').stroke();
-  doc.rect(tableLeft + keyWidth, y, valueWidth, rowHeight).strokeColor('#16436f').stroke();
+  doc.rect(tableLeft + keyWidth, y, valueWidth+58, rowHeight).strokeColor('#16436f').stroke();
 
   doc.moveDown(); // Move down after the row
 });
