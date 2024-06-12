@@ -405,13 +405,13 @@ exports.downloadPdf = async (req, res, next) => {
     
 
     // Add company name, email, and phone number
-    doc.fontSize(16).text("Shreeji Pharma International", 120, 20, { align: 'right' });
-    doc.fontSize(12).text("contact@shreejipharma.com", 120, 40, { align: 'right' });
-    doc.fontSize(12).text("+918866002331", 120, 60, { align: 'right' });
+    doc.fontSize(16).text("Shreeji Pharma International", 120, 55, { align: 'right' });
+doc.fontSize(12).text("contact@shreejipharma.com", 120, 75, { align: 'right' });
+doc.fontSize(12).text("+918866002331", 120, 95, { align: 'right' });
+
 
     // Add some space after the header section
-    doc.moveDown(7);
-
+    doc.moveDown(4);
 
     // Add the title
     doc.fontSize(30).text(Description, { align: "center",underline:true });
@@ -455,7 +455,7 @@ exports.downloadPdf = async (req, res, next) => {
     doc.moveDown();
 
     const tableTop = doc.y;
-    const tableLeft = 24;
+    const tableLeft = 40;
     const keyWidth = 200;
     const valueWidth = 300;
     const rowPadding = 14;
@@ -498,14 +498,14 @@ exports.downloadPdf = async (req, res, next) => {
       });
 
       // Draw the Product Value
-      doc.fontSize(12).text(detail.ProductValue, tableLeft + keyWidth + 50 + rowPadding, y + rowPadding, {
+      doc.fontSize(12).text(detail.ProductValue, tableLeft + keyWidth + rowPadding, y + rowPadding, {
         width: valueWidth - rowPadding * 2,
         align: 'left'
       });
 
       // Draw borders for the row
       doc.rect(tableLeft, y, keyWidth, rowHeight).stroke();
-      doc.rect(tableLeft + keyWidth + 50, y, valueWidth, rowHeight).stroke();
+      doc.rect(tableLeft + keyWidth, y, valueWidth, rowHeight).stroke();
 
       doc.moveDown(); // Move down after the row
     });
