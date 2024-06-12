@@ -6,6 +6,7 @@ const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
 const { throws } = require("assert");
+const productDetailRoutes = require('./routes/ProductDetail');
 //const autoIncrement = require("mongoose-auto-increment");
 // const XMLHttpRequest =  require('xhr2');
 // var httpRequest = new XMLHttpRequest();
@@ -57,7 +58,15 @@ app.get("/api", (req, res) => {
     dbstatus: databasestatus,
   });
 });
+// app.use('/api1', productDetailRoutes);
 
+// Error-handling middleware should be added last
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  if (!res.headersSent) {
+    res.status(500).send('Something went wrong!');
+  }
+});
 app.get("/error", (req, res) => {
   let num = 20;
   num = 20 / 0;

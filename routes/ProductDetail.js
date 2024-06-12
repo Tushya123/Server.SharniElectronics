@@ -1,11 +1,15 @@
 const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
+const cors = require("cors");
+
 const catchAsync = require("../utils/catchAsync");
-const {listProjectDetailByParamsSearch, createProjectDetail, listProjectDetail, updateProjectDetail, removeProjectDetail, listProjectDetailByParams,getspecificProductDetail , getProductByDescription } = require("../controllers/ProductDetail/ProductDetail");
+const {listProjectDetailByParamsSearch, createProjectDetail, listProjectDetail, updateProjectDetail, removeProjectDetail, listProjectDetailByParams,getspecificProductDetail , getProductByDescription,downloadPdf } = require("../controllers/ProductDetail/ProductDetail");
 
 
 const router = express.Router();
+
+router.use(cors());
 
 const uploadDirectory = "uploads/ProductDetailImages";
 if (!fs.existsSync(uploadDirectory)) {
@@ -90,6 +94,6 @@ router.delete(
     "/auth/get/productdetail/:description",
     catchAsync(getProductByDescription)
   );
-
+  router.post("/download-pdf", downloadPdf);
 
 module.exports = router;
