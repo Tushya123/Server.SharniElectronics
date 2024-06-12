@@ -397,7 +397,7 @@ exports.downloadPdf = async (req, res, next) => {
 
     if (fs.existsSync(tempLogoPath)) {
       doc.image(tempLogoPath, {
-        fit: [150, 75],
+        fit: [90, 58],
         align: 'left',
       });
       fs.unlinkSync(tempLogoPath);
@@ -405,110 +405,116 @@ exports.downloadPdf = async (req, res, next) => {
     
 
     // Add company name, email, and phone number
-    doc.fontSize(16).text("Shreeji Pharma International", 120, 55, { align: 'right' });
-doc.fontSize(12).text("contact@shreejipharma.com", 120, 75, { align: 'right' });
-doc.fontSize(12).text("+918866002331", 120, 95, { align: 'right' });
+    doc.fontSize(14).fillColor('#16436f').text("Shreeji Pharma International", 120, 55, { align: 'right' });
+doc.fontSize(12).fillColor('#16436f').text("contact@shreejipharma.com", 120, 75, { align: 'right' });
+doc.fontSize(12).fillColor('#16436f').text("+918866002331", 120, 95, { align: 'right' });
 
 
     // Add some space after the header section
-    doc.moveDown(4);
+    doc.moveDown(3);
 
     // Add the title
-    doc.fontSize(30).text(Description, { align: "center",underline:true });
+   // Center align the text
+doc.fontSize(23).fillColor('#16436f').text(Description, {
+  underline: true,
+  align: 'center'
+});
+
+
+// Add the image if available
+if (ImageUrl) {
+  const imageUrl = `https://server.shreejipharma.in/${ImageUrl}`;
+  console.log("Downloading image from:", imageUrl);
+
+  const response = await axios({
+    url: imageUrl,
+    responseType: 'arraybuffer'
+  });
+
+  const tempImagePath = path.join(__dirname, `temp-image-${Date.now()}.jpg`);
+  fs.writeFileSync(tempImagePath, response.data);
+
+  if (fs.existsSync(tempImagePath)) {
+    // Calculate horizontal position to center the image
+    const x = (doc.page.width - 275) / 2;
+
+    // Calculate vertical position to center the image below the text
+    const y = doc.y + 20; // Assuming some space between text and image
+
+    doc.image(tempImagePath, x, y, {
+      fit: [275, 170],
+      align: 'center',
+      valign: 'center'
+    });
     doc.moveDown();
 
-    // Add the image if available
-    if (ImageUrl) {
-      const imageUrl = `https://server.shreejipharma.in/${ImageUrl}`;
-      console.log("Downloading image from:", imageUrl);
-
-      const response = await axios({
-        url: imageUrl,
-        responseType: 'arraybuffer'
-      });
-
-      const tempImagePath = path.join(__dirname, `temp-image-${Date.now()}.jpg`);
-      fs.writeFileSync(tempImagePath, response.data);
-
-      if (fs.existsSync(tempImagePath)) {
-        doc.image(tempImagePath, {
-          fit: [400, 270],
-          align: 'center',
-          valign: 'center'
-        });
-        doc.moveDown();
-
-        // Delete the temp image after use
-        fs.unlinkSync(tempImagePath);
-      } else {
-        console.error("Image not found:", tempImagePath);
-      }
-    }
-    
+    // Delete the temp image after use
+    fs.unlinkSync(tempImagePath);
+  } else {
+    console.error("Image not found:", tempImagePath);
+  }
+}
 
     // Add some space below the image
-    doc.moveDown(8);
+    doc.moveDown(7);
 
 
     // Add product details in tabular form
-    doc.fontSize(20).text("Product Details:", { underline: true,align:'center' });
-    doc.moveDown();
+   // Center align the "Product Details:" text
+doc.fontSize(20).fillColor('#16436f').text("Product Details:", { underline: true, align: 'center' });
+doc.moveDown();
 
-    const tableTop = doc.y;
-    const tableLeft = 40;
-    const keyWidth = 200;
-    const valueWidth = 300;
-    const rowPadding = 14;
+// Calculate table dimensions
+const tableTop = doc.y;
+const tableLeft = 40;
+const keyWidth = 200;
+const valueWidth = 300;
+const rowPadding = 14;
 
-    // Draw table headers with borders
+// Draw table headers with borders
+// (Commented out because they're not being used in this code snippet)
 
-    // doc.rect(tableLeft, tableTop, keyWidth, 25 + rowPadding).stroke();
-    // doc.rect(tableLeft + keyWidth + 50, tableTop, valueWidth, 25 + rowPadding).stroke();
+// Draw table rows with borders
+ProductDetailDescription.forEach((detail, index) => {
+  const keyHeight = doc.heightOfString(detail.ProductKey, {
+    width: keyWidth - rowPadding * 2,
+  });
+  const valueHeight = doc.heightOfString(detail.ProductValue, {
+    width: valueWidth - rowPadding * 2,
+  });
+  const rowHeight = Math.max(keyHeight, valueHeight) + rowPadding * 2;
 
-    // doc.moveDown();
+  // Check if there is enough space for the next row, if not, add a new page
+  if (doc.y + rowHeight > doc.page.height - doc.page.margins.bottom) {
+    doc.addPage();
+    const newTableTop = doc.y;
 
-    // Draw table rows with borders
-    ProductDetailDescription.forEach((detail, index) => {
-      const keyHeight = doc.heightOfString(detail.ProductKey, {
-        width: keyWidth - rowPadding * 2,
-      });
-      const valueHeight = doc.heightOfString(detail.ProductValue, {
-        width: valueWidth - rowPadding * 2,
-      });
-      const rowHeight = Math.max(keyHeight, valueHeight) + rowPadding * 2;
+    // Draw table headers with borders on the new page
+    // (You may include this part if needed)
 
-      // Check if there is enough space for the next row, if not, add a new page
-      if (doc.y + rowHeight > doc.page.height - doc.page.margins.bottom) {
-        doc.addPage();
-        const newTableTop = doc.y;
+    doc.moveDown(2); // Move down after adding a new page
+  }
 
-        // Draw table headers with borders on the new page
-       
+  const y = doc.y;
 
+  // Draw the Product Key
+  doc.fontSize(12).fillColor('#16436f').text(detail.ProductKey, tableLeft + rowPadding, y + rowPadding, {
+    width: keyWidth - rowPadding * 2,
+    align: 'left'
+  });
 
-        doc.moveDown(2);
-      }
+  // Draw the Product Value
+  doc.fontSize(12).fillColor('#16436f').text(detail.ProductValue, tableLeft + keyWidth + 30 + rowPadding, y + rowPadding, {
+    width: valueWidth - rowPadding * 2,
+    align: 'left'
+  });
 
-      const y = doc.y;
+  // Draw borders for the row
+  doc.rect(tableLeft, y, keyWidth, rowHeight).strokeColor('#16436f').stroke();
+  doc.rect(tableLeft + keyWidth, y, valueWidth, rowHeight).strokeColor('#16436f').stroke();
 
-      // Draw the Product Key
-      doc.fontSize(12).text(detail.ProductKey, tableLeft + rowPadding, y + rowPadding, {
-        width: keyWidth - rowPadding * 2,
-        align: 'left'
-      });
-
-      // Draw the Product Value
-      doc.fontSize(12).text(detail.ProductValue, tableLeft + keyWidth+30 + rowPadding, y + rowPadding, {
-        width: valueWidth - rowPadding * 2,
-        align: 'left'
-      });
-
-      // Draw borders for the row
-      doc.rect(tableLeft, y, keyWidth, rowHeight).stroke();
-      doc.rect(tableLeft + keyWidth, y, valueWidth, rowHeight).stroke();
-
-      doc.moveDown(); // Move down after the row
-    });
+  doc.moveDown(); // Move down after the row
+});
 
     // End the document
     doc.end();
