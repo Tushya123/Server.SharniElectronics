@@ -275,6 +275,27 @@ exports.listInquiryDetailsByParams = async (req, res) => {
         },
       },  
     ];
+    if (match) {
+      query = [
+        {
+          $match: {
+            $or: [
+              {
+                ContactPerson: { $regex: match, $options: "i" },
+              },
+              {
+                Email: { $regex: match, $options: "i" },
+              },
+              {
+                Mobile: { $regex: match, $options: "i" },
+              },{
+                CompanyName: { $regex: match, $options: "i" },
+              },
+            ],
+          },
+        },
+      ].concat(query);
+    }
 
     if (sorton && sortdir) {
       let sort = {};
@@ -406,6 +427,11 @@ exports.downloadProductInquiryByParamsandDate = async (req, res) => {
               },
               {
                 Email: { $regex: match, $options: "i" },
+              },
+              {
+                Mobile: { $regex: match, $options: "i" },
+              },{
+                CompanyName: { $regex: match, $options: "i" },
               },
             ],
           },
