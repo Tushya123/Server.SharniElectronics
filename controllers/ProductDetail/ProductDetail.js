@@ -498,7 +498,7 @@ doc.fontSize(12).text("+918866002331", 120, 95, { align: 'right' });
       });
 
       // Draw the Product Value
-      doc.fontSize(12).text(detail.ProductValue, tableLeft + keyWidth + rowPadding, y + rowPadding, {
+      doc.fontSize(12).text(detail.ProductValue, tableLeft + keyWidth+30 + rowPadding, y + rowPadding, {
         width: valueWidth - rowPadding * 2,
         align: 'left'
       });
