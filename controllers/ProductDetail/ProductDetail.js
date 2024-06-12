@@ -384,6 +384,34 @@ exports.downloadPdf = async (req, res, next) => {
 
     // Pipe the PDF content to the response
     doc.pipe(res);
+    const logoUrl = 'https://front.shreejipharma.in/static/media/logo.eecbf1c37f0a264bcea6.png'; // Update with the actual logo URL
+
+    // Download the logo image
+    const logoResponse = await axios({
+      url: logoUrl,
+      responseType: 'arraybuffer'
+    });
+
+    const tempLogoPath = path.join(__dirname, `temp-logo-${Date.now()}.jpg`);
+    fs.writeFileSync(tempLogoPath, logoResponse.data);
+
+    if (fs.existsSync(tempLogoPath)) {
+      doc.image(tempLogoPath, {
+        fit: [150, 75],
+        align: 'left',
+      });
+      fs.unlinkSync(tempLogoPath);
+    }
+    
+
+    // Add company name, email, and phone number
+    doc.fontSize(16).text("Shreeji Pharma International", 120, 20, { align: 'right' });
+    doc.fontSize(12).text("contact@shreejipharma.com", 120, 40, { align: 'right' });
+    doc.fontSize(12).text("+918866002331", 120, 60, { align: 'right' });
+
+    // Add some space after the header section
+    doc.moveDown(7);
+
 
     // Add the title
     doc.fontSize(30).text(Description, { align: "center",underline:true });
@@ -391,7 +419,7 @@ exports.downloadPdf = async (req, res, next) => {
 
     // Add the image if available
     if (ImageUrl) {
-      const imageUrl = `${process.env.REACT_APP_API_URL_SHREEJI_PHARMACY}/${ImageUrl}`;
+      const imageUrl = `https://server.shreejipharma.in/${ImageUrl}`;
       console.log("Downloading image from:", imageUrl);
 
       const response = await axios({
