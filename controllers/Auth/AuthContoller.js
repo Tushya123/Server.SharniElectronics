@@ -23,16 +23,16 @@ exports.createAdminUser = async (req, res) => {
 
 
       let { firstName, lastName, email,password, IsActive } = req.body;  
-    const emailExists = await User.findOne({
-      email: req.body.email,
-    }).exec();
+    // const emailExists = await User.findOne({
+    //   email: req.body.email,
+    // }).exec();
 
-    if (emailExists) {
-      return res.status(200).json({
-        isOk: false,
-        message: "Email already exists",
-      });
-    } else {
+    // if (emailExists) {
+    //   return res.status(200).json({
+    //     isOk: false,
+    //     message: "Email already exists",
+    //   });
+    // } else {
       const add = await new User({
         firstName,
         lastName,
@@ -42,7 +42,7 @@ exports.createAdminUser = async (req, res) => {
         IsActive,
       }).save();
       res.status(200).json({ isOk: true, data: add, message: "" });
-    }
+    
   } catch (err) {
     console.log(err);
     return res.status(500).send(err);

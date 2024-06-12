@@ -7,7 +7,10 @@ const fs=require("fs");
 exports.createAssignProduct = async (req, res) => {
   try {
     let { SupplierName, ProductDetail, isActive  } = req.body;
-    if (typeof ProductDetail === 'string') {
+    console.log("productDetail",typeof ProductDetail)
+    if (!ProductDetail || ProductDetail.length === 0) {
+      ProductDetail = [];
+    } else if (typeof ProductDetail === 'string') {
       ProductDetail = ProductDetail.split(',').map(typology => typology.trim());
     }
     const newsupplierassign = await new assignproduct({
@@ -211,8 +214,8 @@ exports.listAssignProductByParamsforReport = async (req, res) => {
       {
         $match: {
           $or: [
-            { "ProductDetailTypes.ProductDetail": { $regex: match, $options: "i" } },
-            { "SupplierDetailTypes.SupplierName": { $regex: match, $options: "i" } },
+            { "ProductDetailTypes.0.Description": { $regex: match, $options: "i" } },
+            
           ],
         },
       },
