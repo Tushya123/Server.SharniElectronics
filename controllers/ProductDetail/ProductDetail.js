@@ -397,31 +397,22 @@ exports.downloadPdf = async (req, res, next) => {
 
     if (fs.existsSync(tempLogoPath)) {
       doc.image(tempLogoPath, {
-        fit: [90, 58],
+        fit: [100, 68],
         align: 'left',
       });
       fs.unlinkSync(tempLogoPath);
     }
-    
+    // Add the bold text
+    doc.font('Helvetica-Bold').fontSize(20).fillColor('#16436f').text("Shreeji Pharma International", 120, 75, { align: 'right' });
+    doc.font('Helvetica-Bold').fontSize(11).fillColor('#16436f').text("contact@shreejipharma.com", 120, 105, { align: 'right' });
+    doc.font('Helvetica-Bold').fontSize(11).fillColor('#16436f').text("+918866002331", 120, 125, { align: 'right' });
+    doc.moveDown(4);
+  
+    // Set font size and color for description text and align to the left
+    doc.font('Helvetica-Bold').fontSize(23).fillColor('#16436f').text(Description, {
+      align: 'left'
+    });
 
-    // Add company name, email, and phone number
-    doc.fontSize(14).fillColor('#16436f').text("Shreeji Pharma International", 120, 55, { align: 'right' });
-doc.fontSize(12).fillColor('#16436f').text("contact@shreejipharma.com", 120, 75, { align: 'right' });
-doc.fontSize(12).fillColor('#16436f').text("+918866002331", 120, 95, { align: 'right' });
-
-
-    // Add some space after the header section
-    doc.moveDown(3);
-
-    // Add the title
-   // Center align the text
-doc.fontSize(23).fillColor('#16436f').text(Description, {
-  underline: true,
-  align: 'center'
-});
-
-
-// Add the image if available
 if (ImageUrl) {
   const imageUrl = `https://server.shreejipharma.in/${ImageUrl}`;
   console.log("Downloading image from:", imageUrl);
@@ -436,17 +427,20 @@ if (ImageUrl) {
 
   if (fs.existsSync(tempImagePath)) {
     // Calculate horizontal position to center the image
-    const x = (doc.page.width - 275) / 2;
+    const maxWidth = doc.page.width;
+        const imageWidth = maxWidth; // Slightly less than the max width of the page
 
-    // Calculate vertical position to center the image below the text
-    const y = doc.y + 20; // Assuming some space between text and image
+        // Calculate horizontal position to center the image
+        const x = (doc.page.width - imageWidth) / 2;
 
-    doc.image(tempImagePath, x, y, {
-      fit: [275, 170],
-      align: 'center',
-      valign: 'center'
-    });
-    doc.moveDown();
+        // Calculate vertical position to place the image below the text
+        const y = doc.y + 15; // Assuming some space between text and image
+
+        doc.image(tempImagePath, x, y, {
+          fit: [imageWidth, 300],
+          align:'center'
+        });
+
 
     // Delete the temp image after use
     fs.unlinkSync(tempImagePath);
@@ -456,13 +450,12 @@ if (ImageUrl) {
 }
 
     // Add some space below the image
-    doc.moveDown(7);
-
+    doc.moveDown(14);
 
     // Add product details in tabular form
    // Center align the "Product Details:" text
-doc.fontSize(20).fillColor('#16436f').text("Product Details:", { underline: true, align: 'center' });
-doc.moveDown();
+// doc.fontSize(20).fillColor('#16436f').text("Product Details:", { underline: true, align: 'center' });
+// doc.moveDown();
 
 // Calculate table dimensions
 const tableTop = doc.y;
@@ -475,6 +468,15 @@ const rowPadding = 14;
 // (Commented out because they're not being used in this code snippet)
 
 // Draw table rows with borders
+doc.font('Helvetica-Bold').fontSize(12).fillColor('#16436f')
+.text("Name", tableLeft + rowPadding, tableTop + rowPadding, { width: keyWidth - rowPadding * 2 })
+.text("Detail", tableLeft + keyWidth + 30 + rowPadding, tableTop + rowPadding, { width: valueWidth - rowPadding * 2 });
+doc.moveDown(1)
+// Draw borders for headers
+const headerHeight = doc.heightOfString("Name", { width: keyWidth - rowPadding * 2 }) + rowPadding * 2;
+doc.rect(tableLeft, tableTop, keyWidth, headerHeight).strokeColor('#16436f').stroke();
+doc.rect(tableLeft + keyWidth, tableTop, valueWidth + 58, headerHeight).strokeColor('#16436f').stroke();
+
 ProductDetailDescription.forEach((detail, index) => {
   const keyHeight = doc.heightOfString(detail.ProductKey, {
     width: keyWidth - rowPadding * 2,
@@ -498,15 +500,15 @@ ProductDetailDescription.forEach((detail, index) => {
   const y = doc.y;
 
   // Draw the Product Key
-  doc.fontSize(12).fillColor('#16436f').text(detail.ProductKey, tableLeft + rowPadding, y + rowPadding, {
+  doc.font('Helvetica').fontSize(12).fillColor('#16436f').text(detail.ProductKey, tableLeft + rowPadding, y + rowPadding, {
     width: keyWidth - rowPadding * 2,
-    align: 'left'
+    
   });
 
   // Draw the Product Value
-  doc.fontSize(12).fillColor('#16436f').text(detail.ProductValue, tableLeft + keyWidth + 30 + rowPadding, y + rowPadding, {
+  doc.font('Helvetica').fontSize(12).fillColor('#16436f').text(detail.ProductValue, tableLeft + keyWidth + 30 + rowPadding, y + rowPadding, {
     width: valueWidth - rowPadding * 2,
-    align: 'left'
+    
   });
 
   // Draw borders for the row
