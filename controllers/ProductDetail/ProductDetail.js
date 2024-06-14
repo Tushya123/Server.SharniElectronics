@@ -3,11 +3,12 @@ const supplierquote=require("../../models/SupplierQuote/SupplierQuote")
 const PDFDocument = require("pdfkit");
 const path = require('path');
 const fs = require("fs");
-const puppeteer = require('puppeteer'); 
+
+
 const handlebars = require('handlebars'); 
 const img1 = path.join(__dirname, 'header.png');
 const ejs = require('ejs');
-const htmlPdf = require('html-pdf');
+const puppeteer = require('puppeteer');
 
 exports.createProjectDetail = async (req, res) => {
   try {
@@ -370,60 +371,62 @@ exports.getProductByDescription = async (req, res) => {
 const axios = require('axios');
 
 
-// exports.downloadPdf = async (req, res, next) => {
-//   try {
-//     console.log("req.body", req.body);
-//     const { Description, ImageUrl, ProductDetailDescription } = req.body;
+exports.downloadPdf = async (req, res, next) => {
+  try {
+    console.log("req.body", req.body);
+    const { Description, ImageUrl, ProductDetailDescription } = req.body;
 
-//     // Fetch and save the logo image temporarily
-//     const logoUrl = 'https://front.shreejipharma.in/static/media/logo.eecbf1c37f0a264bcea6.png';
-//     const logoResponse = await axios.get(logoUrl, { responseType: 'arraybuffer' });
-//     const tempLogoPath = path.join(__dirname, `temp-logo-${Date.now()}.jpg`);
-//     fs.writeFileSync(tempLogoPath, logoResponse.data);
+    // Fetch and save the logo image temporarily
+    const logoUrl = `https://server.shreejipharma.in/uploads/header.png`;
 
-//     // Fetch and save the product image temporarily
-//     const productImageUrl = `https://server.shreejipharma.in/${ImageUrl}`;
-//     const productImageResponse = await axios.get(productImageUrl, { responseType: 'arraybuffer' });
-//     const tempProductImagePath = path.join(__dirname, `temp-product-image-${Date.now()}.jpg`);
-//     fs.writeFileSync(tempProductImagePath, productImageResponse.data);
+    // Fetch and save the product image temporarily
+    const productImageUrl = `https://server.shreejipharma.in/${ImageUrl}`;
 
-//     // Read and compile the HTML template
-//     const templateHtml = fs.readFileSync(path.join(__dirname, 'template.html'), 'utf8');
-//     const template = handlebars.compile(templateHtml);
+    console.log("Logo URL:", logoUrl);
+    console.log("Product Image URL:", productImageUrl);
 
-//     // Replace placeholders with actual data
-//     const html = template({
-//       logoUrl: `file://${tempLogoPath}`,
-//       Description,
-//       ImageUrl: `file://${tempProductImagePath}`,
-//       ProductDetailDescription,
-//     });
+    // Read and compile the HTML template
+    const templateHtml = fs.readFileSync(path.join(__dirname, 'templet.html'), 'utf8');
+    const template = handlebars.compile(templateHtml);
 
-//     // Launch Puppeteer and create the PDF
-//     const browser = await puppeteer.launch({
-//       args: ['--no-sandbox', '--disable-setuid-sandbox'],
-//       headless: true,
-//       timeout: 60000 // Increase timeout to 60 seconds
-//     });
-//     const page = await browser.newPage();
-//     await page.setContent(html, { waitUntil: 'networkidle0', timeout: 60000 });
-//     const pdfBuffer = await page.pdf({ format: 'A4' });
+    // Replace placeholders with actual data
+    const html = template({
+      logoUrl,
+      Description,
+      ImageUrl1: productImageUrl,
+      ProductDetailDescription,
+    });
 
-//     await browser.close();
+    // Launch Puppeteer and create the PDF
+    const browser = await puppeteer.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      headless: true,
+      timeout: 60000 // Increase timeout to 60 seconds
+    });
 
-//     // Clean up temporary files
-//     fs.unlinkSync(tempLogoPath);
-//     fs.unlinkSync(tempProductImagePath);
+    const page = await browser.newPage();
+    
+    // Set content to the HTML template
+    await page.setContent(html, { waitUntil: 'networkidle0', timeout: 60000 });
 
-//     // Set response headers and send the PDF
-//     res.setHeader('Content-Type', 'application/pdf');
-//     res.setHeader('Content-Disposition', `attachment; filename="${Description}-${Date.now()}.pdf"`);
-//     res.send(pdfBuffer);
-//   } catch (err) {
-//     console.error('Error generating PDF:', err); // Improved error logging
-//     next(err);
-//   }
-// };
+    // Introduce a delay of 3 seconds before generating the PDF
+
+
+    // Generate PDF
+    const pdfBuffer = await page.pdf({ format: 'A4' });
+
+    // Close browser after PDF generation
+    await browser.close();
+
+    // Set response headers and send the PDF
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${Description}-${Date.now()}.pdf"`);
+    res.send(pdfBuffer);
+  } catch (err) {
+    console.error('Error generating PDF:', err); // Improved error logging
+    next(err);
+  }
+};
 
  
 // exports.downloadPdf = async (req, res, next) => {
@@ -586,56 +589,42 @@ const axios = require('axios');
 //     next(err);
 //   }
 // };
-exports.downloadPdf = async (req, res, next) => {
-  try {
-    const { Description, ImageUrl, ProductDetailDescription } = req.body;
+// exports.downloadPdf = async (req, res, next) => {
+//   try {
+//     const { Description, ImageUrl, ProductDetailDescription } = req.body;
 
-    // Fetch and save the header image temporarily
-    const headerImageUrl = 'https://front.shreejipharma.in/static/media/logo.eecbf1c37f0a264bcea6.png';
-    const headerImageResponse = await axios.get(headerImageUrl, { responseType: 'arraybuffer' });
-    const tempHeaderImagePath = path.join(__dirname, `temp-header-${Date.now()}.png`);
-    fs.writeFileSync(tempHeaderImagePath, headerImageResponse.data);
 
-    // Fetch and save the product image temporarily
-    const productImageUrl = `https://server.shreejipharma.in/${ImageUrl}`;
-    const productImageResponse = await axios.get(productImageUrl, { responseType: 'arraybuffer' });
-    const tempProductImagePath = path.join(__dirname, `temp-product-${Date.now()}.png`);
-    fs.writeFileSync(tempProductImagePath, productImageResponse.data);
 
-    console.log(img1)
-    console.log(`https://server.shreejipharma.in/${ImageUrl}`)
-    console.log(`https://server.shreejipharma.in/controllers/ProductDetail/header.png`)
-    console.log('ProductDetailDescription',ProductDetailDescription)
-    // Render the EJS template to HTML
-    const templatePath = path.join(__dirname, 'brocher.ejs');
-    const html = await ejs.renderFile(templatePath, {
-      headerImage: 'https://server.shreejipharma.in/uploads/header.png',
-      productImage: `https://server.shreejipharma.in/${ImageUrl}`,
-      productName: Description,
-      productDetails: ProductDetailDescription
-    });
 
-    // Convert the rendered HTML to PDF
-    const options = { format: 'A4' };
-    htmlPdf.create(html, options).toStream((err, stream) => {
-      if (err) {
-        return next(err);
-      }
+//     // Render the EJS template to HTML
+//     const templatePath = path.join(__dirname, 'brocher.ejs');
+//     const html = await ejs.renderFile(templatePath, {
+//       headerImage: `${process.env.REACT_APP_API_URL_SHREEJI_PHARMACY}/uploads/header.png`,
+//       productImage: `${process.env.REACT_APP_API_URL_SHREEJI_PHARMACY}/${ImageUrl}`,
+//       productName: Description,
+//       productDetails: ProductDetailDescription
+//     });
 
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename="${Description}-${Date.now()}.pdf"`);
-      
-      // Clean up temporary files after sending the response
-      stream.on('end', () => {
-        fs.unlinkSync(tempHeaderImagePath);
-        fs.unlinkSync(tempProductImagePath);
-      });
+//     // Debugging the rendered HTML
+//     console.log('Rendered HTML:', html);
 
-      // Pipe the PDF stream to the response
-      stream.pipe(res);
-    });
-  } catch (err) {
-    console.error('Error generating PDF:', err);
-    next(err);
-  }
-};
+//     // Convert the rendered HTML to PDF using Puppeteer
+//     const browser = await puppeteer.launch();
+//     const page = await browser.newPage();
+//     await page.setContent(html, { waitUntil: 'networkidle0' });
+
+//     const pdfBuffer = await page.pdf({ format: 'A4' });
+//     await browser.close();
+
+//     res.setHeader('Content-Type', 'application/pdf');
+//     res.setHeader('Content-Disposition', `attachment; filename="${Description}-${Date.now()}.pdf"`);
+//     res.send(pdfBuffer);
+
+//     // Clean up temporary files
+//     fs.unlinkSync(tempHeaderImagePath);
+//     fs.unlinkSync(tempProductImagePath);
+//   } catch (err) {
+//     console.error('Error generating PDF:', err);
+//     next(err);
+//   }
+// };
