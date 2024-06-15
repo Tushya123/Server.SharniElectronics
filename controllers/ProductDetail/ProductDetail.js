@@ -370,7 +370,7 @@ exports.getProductByDescription = async (req, res) => {
 
 const axios = require('axios');
 
-
+ 
 exports.downloadPdf = async (req, res, next) => {
   try {
     console.log("req.body", req.body);
@@ -409,11 +409,18 @@ exports.downloadPdf = async (req, res, next) => {
     // Set content to the HTML template
     await page.setContent(html, { waitUntil: 'networkidle0', timeout: 60000 });
 
-    // Introduce a delay of 3 seconds before generating the PDF
-
-
-    // Generate PDF
-    const pdfBuffer = await page.pdf({ format: 'A4' });
+    // Generate PDF with custom header
+    const pdfBuffer = await page.pdf({
+      format: 'A4',
+      displayHeaderFooter: true,
+      headerTemplate: '<div></div>', // Blank header for the first page
+     
+      margin: {
+        top: '20px', // Top margin of 20px for subsequent pages
+        bottom: '20px',
+        
+      }
+    });
 
     // Close browser after PDF generation
     await browser.close();
@@ -427,6 +434,7 @@ exports.downloadPdf = async (req, res, next) => {
     next(err);
   }
 };
+
 
  
 // exports.downloadPdf = async (req, res, next) => {
