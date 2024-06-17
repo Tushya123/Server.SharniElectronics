@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Helvetica';
+            color: #16436f;
+            padding: 0px 20px 20px 20px ;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #16436f;
+            padding-bottom: 10px;
+        }
+        .header img {
+            height: 68px;
+        }
+        .header div {
+            text-align: right;
+        }
+        .header div h1 {
+            font-size: 20px;
+            margin: 0;
+        }
+        .header div p {
+            font-size: 11px;
+            margin: 0;
+        }
+        .description {
+            color: #16436f;
+            font-size: 23px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .product-image {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .product-image img {
+            width: 100%;
+            max-height: 300px;
+        }
+        .product-details {
+            margin-top: 20px;
+        }
+        .product-details table {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+        }
+        .product-details th, .product-details td {
+            border: 1px solid #16436f;
+            padding: 10px;
+            text-align: left;
+        }
+        .product-details th {
+            background-color: #e6f2ff;
+            font-weight: bold;
+        }
+        .product-details td {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="{{logoUrl}}" alt="Shreeji Pharma Logo" style=" width:100%; height:auto ">
+    </div>
+    <div class="description">{{Description}}</div>
+    <div class="product-image">
+        <img src="{{ImageUrl1}}" alt="Product Image">
+    </div>
+    <div class="product-details">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Detail</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each ProductDetailDescription}}
+                <tr>
+                    <td>{{this.ProductKey}}</td>
+                    <td>{{this.ProductValue}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

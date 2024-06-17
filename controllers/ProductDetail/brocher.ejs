@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        html {
+            height: 100%;
+            box-sizing: border-box;
+            font-family: 'Saira', sans-serif;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: inherit;
+        }
+
+        body {
+            height: auto;
+            margin: 10px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media print {
+            body, html {
+                -webkit-print-color-adjust: exact;
+                font-family: 'Saira', sans-serif;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div>
+        <header>
+            <img src="<%= headerImage %>" style="width:100%; height:auto" />
+        </header>
+
+        <div class="product-img" style="text-align:center">
+            <img src="<%= productImage %>" style="width:auto; height:auto; margin:20px auto;" />
+        </div>
+
+        <div class="product-details">
+            <h4 style="font-size:22px; color: #16436f;"><%= productName %></h4>
+
+            <div>
+                <table style="width: 100%; border-collapse: collapse; margin: auto;">
+                    <tbody>
+                        <tr>
+                            <th style="border: 1px solid #dddddd; text-align: left; padding: 8px; background-color: #f2f2f2;">Name</th>
+                            <th style="border: 1px solid #dddddd; text-align: left; padding: 8px; background-color: #f2f2f2;">Detail</th>
+                        </tr>
+                        <% productDetails.forEach(detail => { %>
+                        <tr>
+                            <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;"><%= detail.ProductKey %></td>
+                            <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;"><%= detail.ProductValue %></td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
