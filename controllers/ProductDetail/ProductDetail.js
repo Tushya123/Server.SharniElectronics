@@ -397,118 +397,126 @@ exports.downloadPdf = async (req, res, next) => {
 
     if (fs.existsSync(tempLogoPath)) {
       doc.image(tempLogoPath, {
-        fit: [150, 75],
+        fit: [100, 68],
         align: 'left',
       });
       fs.unlinkSync(tempLogoPath);
     }
-    
-
-    // Add company name, email, and phone number
-    doc.fontSize(16).text("Shreeji Pharma International", 120, 55, { align: 'right' });
-doc.fontSize(12).text("contact@shreejipharma.com", 120, 75, { align: 'right' });
-doc.fontSize(12).text("+918866002331", 120, 95, { align: 'right' });
-
-
-    // Add some space after the header section
+    // Add the bold text
+    doc.font('Helvetica-Bold').fontSize(20).fillColor('#16436f').text("Shreeji Pharma International", 120, 75, { align: 'right' });
+    doc.font('Helvetica-Bold').fontSize(11).fillColor('#16436f').text("contact@shreejipharma.com", 120, 105, { align: 'right' });
+    doc.font('Helvetica-Bold').fontSize(11).fillColor('#16436f').text("+918866002331", 120, 125, { align: 'right' });
     doc.moveDown(4);
+  
+    // Set font size and color for description text and align to the left
+    doc.font('Helvetica-Bold').fontSize(23).fillColor('#16436f').text(Description, {
+      align: 'left'
+    });
 
-    // Add the title
-    doc.fontSize(30).text(Description, { align: "center",underline:true });
-    doc.moveDown();
+if (ImageUrl) {
+  const imageUrl = `https://server.shreejipharma.in/${ImageUrl}`;
+  console.log("Downloading image from:", imageUrl);
 
-    // Add the image if available
-    if (ImageUrl) {
-      const imageUrl = `https://server.shreejipharma.in/${ImageUrl}`;
-      console.log("Downloading image from:", imageUrl);
+  const response = await axios({
+    url: imageUrl,
+    responseType: 'arraybuffer'
+  });
 
-      const response = await axios({
-        url: imageUrl,
-        responseType: 'arraybuffer'
-      });
+  const tempImagePath = path.join(__dirname, `temp-image-${Date.now()}.jpg`);
+  fs.writeFileSync(tempImagePath, response.data);
 
-      const tempImagePath = path.join(__dirname, `temp-image-${Date.now()}.jpg`);
-      fs.writeFileSync(tempImagePath, response.data);
+  if (fs.existsSync(tempImagePath)) {
+    // Calculate horizontal position to center the image
+    const maxWidth = doc.page.width;
+        const imageWidth = maxWidth; // Slightly less than the max width of the page
 
-      if (fs.existsSync(tempImagePath)) {
-        doc.image(tempImagePath, {
-          fit: [400, 270],
-          align: 'center',
-          valign: 'center'
+        // Calculate horizontal position to center the image
+        const x = (doc.page.width - imageWidth) / 2;
+
+        // Calculate vertical position to place the image below the text
+        const y = doc.y + 15; // Assuming some space between text and image
+
+        doc.image(tempImagePath, x, y, {
+          fit: [imageWidth, 300],
+          align:'center'
         });
-        doc.moveDown();
 
-        // Delete the temp image after use
-        fs.unlinkSync(tempImagePath);
-      } else {
-        console.error("Image not found:", tempImagePath);
-      }
-    }
-    
+
+    // Delete the temp image after use
+    fs.unlinkSync(tempImagePath);
+  } else {
+    console.error("Image not found:", tempImagePath);
+  }
+}
 
     // Add some space below the image
-    doc.moveDown(8);
-
+    doc.moveDown(14);
 
     // Add product details in tabular form
-    doc.fontSize(20).text("Product Details:", { underline: true,align:'center' });
-    doc.moveDown();
+   // Center align the "Product Details:" text
+// doc.fontSize(20).fillColor('#16436f').text("Product Details:", { underline: true, align: 'center' });
+// doc.moveDown();
 
-    const tableTop = doc.y;
-    const tableLeft = 40;
-    const keyWidth = 200;
-    const valueWidth = 300;
-    const rowPadding = 14;
+// Calculate table dimensions
+const tableTop = doc.y;
+const tableLeft = 40;
+const keyWidth = 200;
+const valueWidth = 300;
+const rowPadding = 14;
 
-    // Draw table headers with borders
+// Draw table headers with borders
+// (Commented out because they're not being used in this code snippet)
 
-    // doc.rect(tableLeft, tableTop, keyWidth, 25 + rowPadding).stroke();
-    // doc.rect(tableLeft + keyWidth + 50, tableTop, valueWidth, 25 + rowPadding).stroke();
+// Draw table rows with borders
+doc.font('Helvetica-Bold').fontSize(12).fillColor('#16436f')
+.text("Name", tableLeft + rowPadding, tableTop + rowPadding, { width: keyWidth - rowPadding * 2 })
+.text("Detail", tableLeft + keyWidth + 30 + rowPadding, tableTop + rowPadding, { width: valueWidth - rowPadding * 2 });
+doc.moveDown(1)
+// Draw borders for headers
+const headerHeight = doc.heightOfString("Name", { width: keyWidth - rowPadding * 2 }) + rowPadding * 2;
+doc.rect(tableLeft, tableTop, keyWidth, headerHeight).strokeColor('#16436f').stroke();
+doc.rect(tableLeft + keyWidth, tableTop, valueWidth + 58, headerHeight).strokeColor('#16436f').stroke();
 
-    // doc.moveDown();
+ProductDetailDescription.forEach((detail, index) => {
+  const keyHeight = doc.heightOfString(detail.ProductKey, {
+    width: keyWidth - rowPadding * 2,
+  });
+  const valueHeight = doc.heightOfString(detail.ProductValue, {
+    width: valueWidth - rowPadding * 2,
+  });
+  const rowHeight = Math.max(keyHeight, valueHeight) + rowPadding * 2;
 
-    // Draw table rows with borders
-    ProductDetailDescription.forEach((detail, index) => {
-      const keyHeight = doc.heightOfString(detail.ProductKey, {
-        width: keyWidth - rowPadding * 2,
-      });
-      const valueHeight = doc.heightOfString(detail.ProductValue, {
-        width: valueWidth - rowPadding * 2,
-      });
-      const rowHeight = Math.max(keyHeight, valueHeight) + rowPadding * 2;
+  // Check if there is enough space for the next row, if not, add a new page
+  if (doc.y + rowHeight > doc.page.height - doc.page.margins.bottom) {
+    doc.addPage();
+    const newTableTop = doc.y;
 
-      // Check if there is enough space for the next row, if not, add a new page
-      if (doc.y + rowHeight > doc.page.height - doc.page.margins.bottom) {
-        doc.addPage();
-        const newTableTop = doc.y;
+    // Draw table headers with borders on the new page
+    // (You may include this part if needed)
 
-        // Draw table headers with borders on the new page
-       
+    doc.moveDown(2); // Move down after adding a new page
+  }
 
+  const y = doc.y;
 
-        doc.moveDown(2);
-      }
+  // Draw the Product Key
+  doc.font('Helvetica').fontSize(12).fillColor('#16436f').text(detail.ProductKey, tableLeft + rowPadding, y + rowPadding, {
+    width: keyWidth - rowPadding * 2,
+    
+  });
 
-      const y = doc.y;
+  // Draw the Product Value
+  doc.font('Helvetica').fontSize(12).fillColor('#16436f').text(detail.ProductValue, tableLeft + keyWidth + 30 + rowPadding, y + rowPadding, {
+    width: valueWidth - rowPadding * 2,
+    
+  });
 
-      // Draw the Product Key
-      doc.fontSize(12).text(detail.ProductKey, tableLeft + rowPadding, y + rowPadding, {
-        width: keyWidth - rowPadding * 2,
-        align: 'left'
-      });
+  // Draw borders for the row
+  doc.rect(tableLeft, y, keyWidth, rowHeight).strokeColor('#16436f').stroke();
+  doc.rect(tableLeft + keyWidth, y, valueWidth+58, rowHeight).strokeColor('#16436f').stroke();
 
-      // Draw the Product Value
-      doc.fontSize(12).text(detail.ProductValue, tableLeft + keyWidth + rowPadding, y + rowPadding, {
-        width: valueWidth - rowPadding * 2,
-        align: 'left'
-      });
-
-      // Draw borders for the row
-      doc.rect(tableLeft, y, keyWidth, rowHeight).stroke();
-      doc.rect(tableLeft + keyWidth, y, valueWidth, rowHeight).stroke();
-
-      doc.moveDown(); // Move down after the row
-    });
+  doc.moveDown(); // Move down after the row
+});
 
     // End the document
     doc.end();
