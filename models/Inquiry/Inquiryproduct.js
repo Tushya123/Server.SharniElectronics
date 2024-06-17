@@ -14,8 +14,8 @@ const InquirySchema = new mongoose.Schema({
     //     type:String,
     // },
     Quantity:{
-        type:Number
-    },
+        type:String
+    },  
     Group:{
         type:String,
     },
