@@ -377,10 +377,10 @@ exports.downloadPdf = async (req, res, next) => {
     const { Description, ImageUrl, ProductDetailDescription } = req.body;
 
     // Fetch and save the logo image temporarily
-    const logoUrl = `https://server.shreejipharma.in/uploads/header.png`;
+    const logoUrl = `https://server.shreejipharma.com/uploads/header.png`;
 
     // Fetch and save the product image temporarily
-    const productImageUrl = `https://server.shreejipharma.in/${ImageUrl}`;
+    const productImageUrl = `https://server.shreejipharma.com/${ImageUrl}`;
 
     console.log("Logo URL:", logoUrl);
     console.log("Product Image URL:", productImageUrl);
