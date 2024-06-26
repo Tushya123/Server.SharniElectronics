@@ -28,6 +28,7 @@ const ProductDetailSchema = new mongoose.Schema(
     ],
     IsActive: {
       type: Boolean,
+        default: ''
     },
   },
   { timestamps: true }

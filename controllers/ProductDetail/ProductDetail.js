@@ -15,24 +15,10 @@ exports.createProjectDetail = async (req, res) => {
     if (!fs.existsSync(`${__basedir}/uploads/ProductDetailImages`)) {
       fs.mkdirSync(`${__basedir}/uploads/ProductDetailImages`);
     }
-    let bannerImage = req.file ? `uploads/ProductDetailImages/${req.file.filename}` : null;
-    let {  ProductDetail, Description, IsActive, ProductDetailDescription } = req.body;
-    console.log(typeof ProductDetailDescription)
-//     const keyArray = ProductDetailDescriptionKey.split(',').map(typology => typology.trim());
-// const valueArray = ProductDetailDescriptionValue.split(',').map(typology => typology.trim());
+    let bannerImage = req.file ? `uploads/ProductDetailImages/${req.file.filename}` : '';
+    let { ProductDetail, Description, IsActive, ProductDetailDescription } = req.body;
+    console.log(typeof ProductDetailDescription);
 
-// // Flatten the arrays
-// const flattenedKeyArray = keyArray.flat();
-// const flattenedValueArray = valueArray.flat();
-
-// // Assuming you want to remove the escape characters ("\")
-//   const sanitizedKeyArray = flattenedKeyArray.map(item => item.replace(/[\[\]"]+/g, ''));
-// const sanitizedValueArray = flattenedValueArray.map(item => item.replace(/[\[\]"]+/g, ''));
-// console.log(sanitizedKeyArray)
-// console.log(sanitizedValueArray)
-    // ProductDetailDescriptionValue = ProductDetailDescriptionValue.split(',').map(typology => typology.trim());
-    // ProductDetailDescriptionKey = ProductDetailDescriptionKey.split(',').map(typology => typology.trim());
-    
     // Assuming ProductDetailDescription is passed as a stringified JSON array
     const newMetalDetails = JSON.parse(ProductDetailDescription);
     const extractedObjects = [];
@@ -43,15 +29,13 @@ exports.createProjectDetail = async (req, res) => {
         extractedObjects.push(extractedObject);
       }
     });
- 
 
     const newProject = await new proddetails({
       ProductDetail,
       Description,
-      
       ImageUrl: bannerImage,
       IsActive,
-      ProductDetailDescription:extractedObjects
+      ProductDetailDescription: extractedObjects
     }).save();
 
     res.status(200).json({
@@ -75,9 +59,9 @@ exports.updateProjectDetail = async (req, res) => {
   try {
     let bannerImage = req.file
       ? `uploads/ProductDetailImages/${req.file.filename}`
-      : null;
+      : '';
     let fieldvalues = { ...req.body };
-    if (bannerImage != null) {
+    if (bannerImage !== '') {
       fieldvalues.ImageUrl = bannerImage;
     }
     const newMetalDetails = JSON.parse(fieldvalues.ProductDetailDescription);
@@ -380,7 +364,7 @@ exports.downloadPdf = async (req, res, next) => {
     const logoUrl = `https://server.shreejipharma.com/uploads/header.png`;
 
     // Fetch and save the product image temporarily
-    const productImageUrl = `https://server.shreejipharma.com/${ImageUrl}`;
+    const productImageUrl = ImageUrl!==""?`https://server.shreejipharma.com/${ImageUrl}`:`https://server.shreejipharma.com/uploads/Image_not_available.jpg`;
 
     console.log("Logo URL:", logoUrl);
     console.log("Product Image URL:", productImageUrl);
