@@ -48,14 +48,16 @@
             margin-top: 20px;
         }
         .product-details table {
-            width: 100%;
+            width: 730px;
             margin-top: 10px;
             border-collapse: collapse;
+            table-layout: fixed;
         }
         .product-details th, .product-details td {
             border: 1px solid #16436f;
             padding: 10px;
             text-align: left;
+            word-wrap: break-word;
         }
         .product-details th {
             background-color: #e6f2ff;
@@ -63,6 +65,12 @@
         }
         .product-details td {
             background-color: #ffffff;
+        }
+        .product-details .name-column {
+            width: 100px;
+        }
+        .product-details .detail-column {
+            width: calc(100% - 100px);
         }
     </style>
 </head>
@@ -78,15 +86,15 @@
         <table>
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Detail</th>
+                    <th class="name-column">Name</th>
+                    <th class="detail-column">Detail</th>
                 </tr>
             </thead>
             <tbody>
                 {{#each ProductDetailDescription}}
                 <tr>
-                    <td>{{this.ProductKey}}</td>
-                    <td>{{this.ProductValue}}</td>
+                    <td class="name-column">{{this.ProductKey}}</td>
+                    <td class="detail-column">{{this.ProductValue}}</td>
                 </tr>
                 {{/each}}
             </tbody>
