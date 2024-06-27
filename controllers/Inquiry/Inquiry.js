@@ -469,7 +469,7 @@ exports.downloadProductInquiryByParamsandDate = async (req, res) => {
       { header: "Country", key: "Country", width: 15 },
      
       { header: "Email", key: "Email", width: 25 },
-      { header: "Mobile", key: "Mobile", width: 15 },
+      { header: "Mobile", key: "Mobile", width: 35 },
       { header: "Inquiry Number", key: "InquiryNumber", width: 30 },
      
     

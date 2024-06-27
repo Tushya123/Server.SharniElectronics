@@ -174,11 +174,11 @@ exports.downloadCountryInquiryByParams = async (req, res) => {
     console.log("Preparing columns for the worksheet");
 
     worksheet.columns = [
-      { header: "Contact Person", key: "ContactPerson" },
-      { header: "Mobile", key: "Mobile" },
-      { header: "Email", key: "Email" },
-      { header: "Country", key: "Country" },
-      { header: "Remark", key: "Remark" },
+      { header: "Contact Person", key: "ContactPerson",width: 25 },
+      { header: "Mobile", key: "Mobile", width: 25 },
+      { header: "Email", key: "Email",width: 25 },
+      { header: "Country", key: "Country",width: 25 },
+      { header: "Remark", key: "Remark",width: 25 },
     ];
 
     console.log("Columns prepared");
