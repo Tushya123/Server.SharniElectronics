@@ -4,10 +4,10 @@ exports.createNewsletter = async (req, res) => {
     try {
       let NewsletterImage = req.file ? `uploads/NewsletterImage/${req.file.filename}` : null;
   
-      let { Title, Description, IsActive } = req.body;
+      let { Title, Description, IsActive,NewsDate } = req.body;
   
       const add = await new NewsletterSchema({
-        Title, Description,NewsletterImage, IsActive 
+        Title, Description,NewsletterImage, IsActive ,NewsDate
        
       }).save();
       res.status(200).json({ isOk: true, data: add, message: "" });
@@ -114,7 +114,7 @@ exports.createNewsletter = async (req, res) => {
 
   exports.updateNewsletter = async (req, res) => {
     try {
-        const {   Title, Description, IsActive  } = req.body;
+        const {   Title, Description, IsActive,NewsDate  } = req.body;
         let NewsletterImage = null;
 
         if (req.file) {
@@ -130,7 +130,7 @@ exports.createNewsletter = async (req, res) => {
 
         const updatedType = await NewsletterSchema.findByIdAndUpdate(
             req.params.id, {
-                Title, Description,NewsletterImage, IsActive 
+                Title, Description,NewsletterImage, IsActive ,NewsDate
             }, { new: true }
         );
 

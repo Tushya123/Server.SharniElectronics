@@ -14,6 +14,10 @@ const NewsletterSchema = new mongoose.Schema(
     NewsletterImage: {
       type: String,
     },
+
+    NewsDate:{
+      type:String
+    },
     
     IsActive: {
       type: Boolean,
