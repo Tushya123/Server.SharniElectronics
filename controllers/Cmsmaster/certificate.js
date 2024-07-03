@@ -134,20 +134,46 @@ exports.getCertificateById = async (req, res) => {
 
 exports.updateCertificate = async (req, res) => {
   try {
-    const { Title, IsActive } = req.body;
-    let CertificateImage = null;
+    // const { Title, IsActive } = req.body;
+    // let CertificateImage = null;
 
-    if (req.file) {
-      CertificateImage = `uploads/CertificateImages/${req.file.filename}`;
-    } else {
-      // Retrieve the previous image path from the database
-      const existingCertificate = await Certificatemodel.findById(
-        req.params.id
-      );
-      if (!existingCertificate) {
-        return res.status(404).json({ message: "Certificate not found" });
-      }
-      CertificateImage = existingCertificate.CertificateImage; // Corrected variable name
+    // if (req.file) {
+    //   CertificateImage = `uploads/CertificateImages/${req.file.filename}`;
+    // } else {
+    //   // Retrieve the previous image path from the database
+    //   const existingCertificate = await Certificatemodel.findById(
+    //     req.params.id
+    //   );
+    //   if (!existingCertificate) {
+    //     return res.status(404).json({ message: "Certificate not found" });
+    //   }
+    //   CertificateImage = existingCertificate.CertificateImage; // Corrected variable name
+    // }
+
+    let CertificateImage = req.file
+      ? `uploads/CertificateImages/${req.file.filename}`
+      : req.body.CertificateImage;
+    let { Title, IsActive } = req.body;
+
+    console.log("rsrsrsrsrsrsrs", CertificateImage);
+
+    if (CertificateImage) {
+      // Create a temporary file path for the resized image
+      const tempResizedImageCP = `uploads/CertificateImages/tempCP_${CertificateImage.filename}`;
+      // const PATH = ProductImage.path;
+
+      await sharp(CertificateImage)
+        .resize({
+          width: 500,
+          height: 500,
+          fit: "contain",
+          background: "white", // Set background color to white
+        })
+        .toFile(tempResizedImageCP);
+
+      // Remove the original image
+      await fs.unlink(CertificateImage);
+      await fs.rename(tempResizedImageCP, CertificateImage);
     }
 
     const updatedType = await Certificatemodel.findByIdAndUpdate(
