@@ -1,30 +1,52 @@
 const GalleryPhotoSchema = require("../../models/Gallery Photos/GalleryPhotos");
 const sharp = require("sharp"); // Import the sharp library
 const fs = require("fs").promises; // Import the 'fs.promises' module
+const path = require("path");
 
 exports.createGalleryPhoto = async (req, res) => {
   try {
-    // let imageURL = req.file
-    // ? `uploads/GalleryPhoto/${req.file.filename}`
-    //   : null;
     let imageURL = req.file ? req.file : null;
-    console.log("cc", imageURL);
     let { Category, IsActive } = req.body;
 
     if (imageURL) {
-      const tempResizedImageCP = `uploads/GalleryPhoto/tempGP_${imageURL.filename}`;
-      const PATH = imageURL.path;
-      await sharp(PATH)
-        .resize({
-          width: 500,
-          height: 500,
-          fit: "contain",
-          background: "white",
-        })
-        .toFile(tempResizedImageCP);
+      const extname = path.extname(imageURL.filename).toLowerCase();
+      const originalPath = imageURL.path;
 
-      await fs.unlink(PATH);
-      await fs.rename(tempResizedImageCP, PATH);
+      let targetPath;
+      if (extname !== ".jpeg" && extname !== ".jpg") {
+        targetPath = `uploads/GalleryPhoto/${path.basename(
+          imageURL.filename,
+          extname
+        )}.jpeg`;
+
+        await sharp(originalPath)
+          .resize({
+            width: 500,
+            height: 500,
+            fit: "contain",
+            background: "white",
+          })
+          .jpeg() // Convert to JPEG format
+          .toFile(targetPath);
+
+        await fs.unlink(originalPath); // Remove the original file
+        imageURL.path = targetPath; // Update the path to the new JPEG image
+      } else {
+        // If the image is already in JPEG format, create a temporary file to resize
+        targetPath = `uploads/GalleryPhoto/temp_${imageURL.filename}`;
+
+        await sharp(originalPath)
+          .resize({
+            width: 500,
+            height: 500,
+            fit: "contain",
+            background: "white",
+          })
+          .toFile(targetPath);
+
+        await fs.unlink(originalPath); // Remove the original file
+        await fs.rename(targetPath, originalPath); // Rename the temp file to original file
+      }
     }
 
     const newProject = await new GalleryPhotoSchema({
@@ -67,40 +89,60 @@ exports.listGalleryPhotos = async (req, res) => {
 
 exports.updateGalleryPhotos = async (req, res) => {
   try {
-    let imageURL = req.file
-      ? `uploads/GalleryPhoto/${req.file.filename}`
-      : req.body.imageURL;
     let { Category, IsActive } = req.body;
-
-    console.log("rsrsrsrsrsrsrs", imageURL);
+    let imageURL = req.file ? req.file : null;
 
     if (imageURL) {
-      // Create a temporary file path for the resized image
-      const tempResizedImageCP = `uploads/GalleryPhoto/tempGP_${imageURL.filename}`;
-      // const PATH = ProductImage.path;
+      const extname = path.extname(imageURL.filename).toLowerCase();
+      const originalPath = imageURL.path;
 
-      await sharp(imageURL)
-        .resize({
-          width: 500,
-          height: 500,
-          fit: "contain",
-          background: "white", // Set background color to white
-        })
-        .toFile(tempResizedImageCP);
+      let targetPath;
+      if (extname !== ".jpeg" && extname !== ".jpg") {
+        targetPath = `uploads/GalleryPhoto/${path.basename(
+          imageURL.filename,
+          extname
+        )}.jpeg`;
 
-      // Remove the original image
-      await fs.unlink(imageURL);
-      await fs.rename(tempResizedImageCP, imageURL);
+        await sharp(originalPath)
+          .resize({
+            width: 500,
+            height: 500,
+            fit: "contain",
+            background: "white",
+          })
+          .jpeg() // Convert to JPEG format
+          .toFile(targetPath);
+
+        await fs.unlink(originalPath); // Remove the original file
+        imageURL = targetPath; // Update imageURL to the new JPEG image path
+      } else {
+        // If the image is already in JPEG format, create a temporary file to resize
+        targetPath = `uploads/GalleryPhoto/temp_${imageURL.filename}`;
+
+        await sharp(originalPath)
+          .resize({
+            width: 500,
+            height: 500,
+            fit: "contain",
+            background: "white",
+          })
+          .toFile(targetPath);
+
+        await fs.unlink(originalPath);
+        await fs.rename(targetPath, originalPath); // Rename the temp file to original file
+        imageURL = originalPath; // Update imageURL to the resized JPEG image path
+      }
+    } else {
+      imageURL = req.body.imageURL; // Use the existing image URL if no new file is provided
     }
 
     const update = await GalleryPhotoSchema.findOneAndUpdate(
-      { _id: req.params },
+      { _id: req.params._id }, // Use the correct id from params
       {
         $set: {
           Category: Category,
           IsActive: IsActive,
-
-          imageURL: imageURL,
+          imageURL: imageURL, // Ensure imageURL is a string
         },
       },
       { new: true }
@@ -109,14 +151,13 @@ exports.updateGalleryPhotos = async (req, res) => {
     res.status(200).json({
       isOk: true,
       data: update,
-      message: "Project updated successfully",
+      message: "Gallery photo updated successfully",
     });
   } catch (err) {
     console.error(err);
     res.status(500).json({ isOk: false, error: "Internal server error" });
   }
 };
-
 exports.removeGalleryPhotos = async (req, res) => {
   try {
     const delTL = await GalleryPhotoSchema.findByIdAndDelete({
