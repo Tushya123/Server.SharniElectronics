@@ -2,15 +2,29 @@ const Inquiry = require("../../models/Inquiry/Inquiry");
 const ExcelJS = require("exceljs");
 exports.createInquiry = async (req, res) => {
   try {
-    let { IsActive , Mobile, ProductDetail, Email, CompanyName, ContactPerson, Reference, Address, Country, Phone, Fax, Comments ,Status,
+    let {
+      IsActive,
+      Mobile,
+      ProductDetail,
+      Email,
+      CompanyName,
+      ContactPerson,
+      Reference,
+      Address,
+      Country,
+      Phone,
+      Fax,
+      Comments,
+      Status,
       RFQ_Status,
-      Quote} = req.body;
-      if(Country===""){
-        Country="INDIA"
-      }
+      Quote,
+    } = req.body;
+    if (Country === "") {
+      Country = "INDIA";
+    }
     const newInquiry = await new Inquiry({
-      ProductDetail ,
-       
+      ProductDetail,
+
       ContactPerson,
       CompanyName,
       Reference,
@@ -24,7 +38,7 @@ exports.createInquiry = async (req, res) => {
       IsActive,
       Status,
       RFQ_Status,
-      Quote
+      Quote,
     }).save();
 
     res.status(200).json({
@@ -38,15 +52,13 @@ exports.createInquiry = async (req, res) => {
   }
 };
 
-
 exports.listEnquiry = async (req, res) => {
   try {
     const list = await Inquiry.aggregate([
-        
-        {
-          $sort: { createdAt: -1 }
-        }
-      ]);
+      {
+        $sort: { createdAt: -1 },
+      },
+    ]);
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
@@ -56,41 +68,41 @@ exports.listEnquiry = async (req, res) => {
 exports.listActiveInquiryDetails = async (req, res) => {
   try {
     const list = await Inquiry.aggregate([
-        {
-          $lookup: {
-            from: 'servicetypeschemas',
-            localField: 'product', 
-            foreignField: '_id',  
-            as: 'serviceTypeDetails'
-          }
+      {
+        $lookup: {
+          from: "servicetypeschemas",
+          localField: "product",
+          foreignField: "_id",
+          as: "serviceTypeDetails",
         },
-        
-        {
-          $unwind: {
-            path: "$specialitymanagements",
-            preserveNullAndEmptyArrays: true,
-          },
+      },
+
+      {
+        $unwind: {
+          path: "$specialitymanagements",
+          preserveNullAndEmptyArrays: true,
         },
-        // {
-        //   $match: {
-        //     $or: [
-        //       {
-        //         "specialtyInfo.0.SpecialityName": new RegExp(match, "i"),
-        //       },
-        //       {
-        //         Name: new RegExp(match, "i"),
-        //       },   {
-        //         email: new RegExp(match, "i"),
-        //       },   {
-        //         specialityNameOther: new RegExp(match, "i"),
-        //       },
-        //     ],
-        //   },
-        // },
-        {
-          $sort: { createdAt: -1 }
-        }
-      ]);
+      },
+      // {
+      //   $match: {
+      //     $or: [
+      //       {
+      //         "specialtyInfo.0.SpecialityName": new RegExp(match, "i"),
+      //       },
+      //       {
+      //         Name: new RegExp(match, "i"),
+      //       },   {
+      //         email: new RegExp(match, "i"),
+      //       },   {
+      //         specialityNameOther: new RegExp(match, "i"),
+      //       },
+      //     ],
+      //   },
+      // },
+      {
+        $sort: { createdAt: -1 },
+      },
+    ]);
     console.log("list avi", list);
     res.json(list);
   } catch (error) {
@@ -99,49 +111,59 @@ exports.listActiveInquiryDetails = async (req, res) => {
 };
 
 exports.updateInquiryDetail = async (req, res) => {
-    try {
-        // console.log("kokokkokokokokoko",req.file)
-        // let imageURL = req.file
-        // ? `uploads/ProjectDetailImages/${req.file.filename}`
-        //   : req.body.imageURL;
-        let {IsActive , Mobile, ProductDetail, Email, CompanyName, ContactPerson, Reference, Address, Country, Phone, Fax, Comments ,Status,
-          RFQ_Status,
-          Quote} = req.body;
-    
-       
+  try {
+    // console.log("kokokkokokokokoko",req.file)
+    // let imageURL = req.file
+    // ? `uploads/ProjectDetailImages/${req.file.filename}`
+    //   : req.body.imageURL;
+    let {
+      IsActive,
+      Mobile,
+      ProductDetail,
+      Email,
+      CompanyName,
+      ContactPerson,
+      Reference,
+      Address,
+      Country,
+      Phone,
+      Fax,
+      Comments,
+      Status,
+      RFQ_Status,
+      Quote,
+    } = req.body;
 
-        const update = await Inquiry.findOneAndUpdate(
-            { _id: req.params._id },
-            req.body,
-            { new: true }
-          );
-    
-        res.status(200).json({
-          isOk: true,
-          data: update,
-          message: "Project updated successfully",
-        });
-      } catch (err) {
-        console.error(err);
-        res.status(500).json({ isOk: false, error: "Internal server error" });
-      }
+    const update = await Inquiry.findOneAndUpdate(
+      { _id: req.params._id },
+      req.body,
+      { new: true }
+    );
+
+    res.status(200).json({
+      isOk: true,
+      data: update,
+      message: "Project updated successfully",
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ isOk: false, error: "Internal server error" });
+  }
 };
 
 exports.removeInquiryDetail = async (req, res) => {
   try {
-    const delTL = await Inquiry.findByIdAndDelete(
-     req.params);
+    const delTL = await Inquiry.findByIdAndDelete(req.params);
     res.json(delTL);
   } catch (err) {
     res.status(400).send(err);
   }
 };
 
-
- 
 exports.listInquiryDetailsByParamsfordate = async (req, res) => {
   try {
-    let { skip, per_page, sorton, sortdir, match, IsActive, createdAt } = req.body;
+    let { skip, per_page, sorton, sortdir, match, IsActive, createdAt } =
+      req.body;
 
     let query = [
       {
@@ -168,7 +190,7 @@ exports.listInquiryDetailsByParamsfordate = async (req, res) => {
       //   $match: {
       //     $or: [
       //       { "InquiryDetails.0.ContactPerson": new RegExp(match, "i") },
-             
+
       //     ],
       //   },
       // },
@@ -187,10 +209,7 @@ exports.listInquiryDetailsByParamsfordate = async (req, res) => {
               },
             },
           ],
-          stage2: [
-            { $skip: parseInt(skip) },
-            { $limit: parseInt(per_page) },
-          ],
+          stage2: [{ $skip: parseInt(skip) }, { $limit: parseInt(per_page) }],
         },
       },
       {
@@ -201,7 +220,7 @@ exports.listInquiryDetailsByParamsfordate = async (req, res) => {
           count: "$stage1.count",
           data: "$stage2",
         },
-      },  
+      },
     ];
 
     if (sorton && sortdir) {
@@ -235,12 +254,12 @@ exports.listInquiryDetailsByParams = async (req, res) => {
           as: "InquiryDetails",
         },
       },
-       
+
       // {
       //   $match: {
       //     $or: [
       //       { "InquiryDetails.0.ContactPerson": new RegExp(match, "i") },
-             
+
       //     ],
       //   },
       // },
@@ -259,10 +278,7 @@ exports.listInquiryDetailsByParams = async (req, res) => {
               },
             },
           ],
-          stage2: [
-            { $skip: parseInt(skip) },
-            { $limit: parseInt(per_page) },
-          ],
+          stage2: [{ $skip: parseInt(skip) }, { $limit: parseInt(per_page) }],
         },
       },
       {
@@ -273,7 +289,7 @@ exports.listInquiryDetailsByParams = async (req, res) => {
           count: "$stage1.count",
           data: "$stage2",
         },
-      },  
+      },
     ];
     if (match) {
       query = [
@@ -288,7 +304,8 @@ exports.listInquiryDetailsByParams = async (req, res) => {
               },
               {
                 Mobile: { $regex: match, $options: "i" },
-              },{
+              },
+              {
                 CompanyName: { $regex: match, $options: "i" },
               },
             ],
@@ -313,7 +330,6 @@ exports.listInquiryDetailsByParams = async (req, res) => {
   }
 };
 
-
 // exports.getspecificinquiry=async(req,res)=>{
 //     try{
 //         const specificinquity=await Inquiry.findOne({_id:req.params}).populate({
@@ -330,12 +346,12 @@ exports.listInquiryDetailsByParams = async (req, res) => {
 // exports.getspecificinquiry = async (req, res) => {
 //   try {
 //       const specificinquiry = await Inquiry.aggregate([
-//           { 
+//           {
 //               $match: {
 //                   _id: req.params // Assuming req.params contains the ID of the specific inquiry
 //               }
 //           },
-//           // { 
+//           // {
 //           //     $lookup: {
 //           //         from: "inquiryproducts",
 //           //         localField: "ProductDetail",
@@ -344,7 +360,7 @@ exports.listInquiryDetailsByParams = async (req, res) => {
 //           //     }
 //           // }
 //       ]);
-      
+
 //       res.status(200).send(specificinquiry);
 //   } catch(error) {
 //       res.status(500).send(error);
@@ -353,22 +369,23 @@ exports.listInquiryDetailsByParams = async (req, res) => {
 
 exports.getspecificinquiry = async (req, res) => {
   try {
-      const specificinquiry = await Inquiry.findById(req.params) // Assuming req.params contains the ID of the specific inquiry
-                                      .populate('ProductDetail'); // Use populate to perform a lookup on the ProductDetail field
-      
-      if (!specificinquiry) {
-          return res.status(404).send("Inquiry not found");
-      }
-      
-      res.status(200).send(specificinquiry);
-  } catch(error) {
-      console.error(error);
-      res.status(500).send("Internal Server Error");
+    const specificinquiry = await Inquiry.findById(req.params) // Assuming req.params contains the ID of the specific inquiry
+      .populate("ProductDetail"); // Use populate to perform a lookup on the ProductDetail field
+
+    if (!specificinquiry) {
+      return res.status(404).send("Inquiry not found");
+    }
+
+    res.status(200).send(specificinquiry);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
   }
-}
+};
 exports.downloadProductInquiryByParamsandDate = async (req, res) => {
   try {
-    let { skip, per_page, sorton, sortdir, match, IsActive, createdAt } = req.body;
+    let { skip, per_page, sorton, sortdir, match, IsActive, createdAt } =
+      req.body;
 
     let query = [
       {
@@ -430,7 +447,8 @@ exports.downloadProductInquiryByParamsandDate = async (req, res) => {
               },
               {
                 Mobile: { $regex: match, $options: "i" },
-              },{
+              },
+              {
                 CompanyName: { $regex: match, $options: "i" },
               },
             ],
@@ -467,12 +485,11 @@ exports.downloadProductInquiryByParamsandDate = async (req, res) => {
       { header: "Contact Person", key: "ContactPerson", width: 20 },
       { header: "Company Name", key: "CompanyName", width: 30 },
       { header: "Country", key: "Country", width: 15 },
-     
+
       { header: "Email", key: "Email", width: 25 },
       { header: "Mobile", key: "Mobile", width: 35 },
-      { header: "Inquiry Number", key: "InquiryNumber", width: 30 },
-     
-    
+      // { header: "Inquiry Number", key: "InquiryNumber", width: 30 },
+
       { header: "Product Detail", key: "ProductDetailLabel", width: 40 },
       { header: "Product Group", key: "Group", width: 40 },
       { header: "Product Quantity", key: "Quantity", width: 10 },
@@ -483,13 +500,13 @@ exports.downloadProductInquiryByParamsandDate = async (req, res) => {
       let firstEntry = true;
       item.InquiryDetails.forEach((detail) => {
         worksheet.addRow({
-          ContactPerson: firstEntry ? item.ContactPerson : '',
-          CompanyName: firstEntry ? item.CompanyName : '',
-          Mobile: firstEntry ? item.Mobile : '',
-          InquiryNumber: firstEntry ? item._id : '',
-          Email: firstEntry ? item.Email : '',
-          Country: firstEntry ? item.Country : '',
-          
+          ContactPerson: firstEntry ? item.ContactPerson : "",
+          CompanyName: firstEntry ? item.CompanyName : "",
+          Mobile: firstEntry ? item.Mobile : "",
+          // InquiryNumber: firstEntry ? item._id : '',
+          Email: firstEntry ? item.Email : "",
+          Country: firstEntry ? item.Country : "",
+
           ProductDetailLabel: detail.ProductDetailLabel,
           Group: detail.Group,
           Quantity: detail.Quantity,
@@ -515,4 +532,3 @@ exports.downloadProductInquiryByParamsandDate = async (req, res) => {
     res.status(500).send(error);
   }
 };
-
