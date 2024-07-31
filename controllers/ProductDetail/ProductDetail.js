@@ -14,6 +14,7 @@ exports.createProjectDetail = async (req, res) => {
   try {
     if (!fs.existsSync(`${__basedir}/uploads/ProductDetailImages`)) {
       fs.mkdirSync(`${__basedir}/uploads/ProductDetailImages`);
+
     }
     let bannerImage = req.file ? `uploads/ProductDetailImages/${req.file.filename}` : '';
     let { ProductDetail, Description, IsActive, ProductDetailDescription } = req.body;
