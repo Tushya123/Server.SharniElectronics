@@ -4,7 +4,7 @@ const fs = require("fs");
 const cors = require("cors");
 
 const catchAsync = require("../utils/catchAsync");
-const {listProjectDetailByParamsSearch, createProjectDetail, listProjectDetail, updateProjectDetail, removeProjectDetail, listProjectDetailByParams,getspecificProductDetail , getProductByDescription } = require("../controllers/ProductDetail/ProductDetail");
+const {listProjectDetailByParamsSearch, createProjectDetail, listProjectDetail, updateProjectDetail, removeProjectDetail, listProjectDetailByParams,getspecificProductDetail , getProductByDescription,downloadPdf } = require("../controllers/ProductDetail/ProductDetail");
 
 
 const router = express.Router();
@@ -94,6 +94,6 @@ router.delete(
     "/auth/get/productdetail/:description",
     catchAsync(getProductByDescription)
   );
-  // router.post("/download-pdf", downloadPdf);
+  router.post("/download-pdf", downloadPdf);
 
 module.exports = router;
