@@ -12,8 +12,8 @@ const puppeteer = require('puppeteer');
 
 exports.createProjectDetail = async (req, res) => {
   try {
-    if (!fs.existsSync(`${__basedir}/uploads/ProductDetailImages`)) {
-      fs.mkdirSync(`${__basedir}/uploads/ProductDetailImages`);
+    if (!fs.existsSync(`https://server-sharni-electronics.vercel.app/uploads/ProductDetailImages`)) {
+      fs.mkdirSync(`https://server-sharni-electronics.vercel.app/uploads/ProductDetailImages`);
     }
     let bannerImage = req.file ? `uploads/ProductDetailImages/${req.file.filename}` : '';
     let { ProductDetail, Description, IsActive, ProductDetailDescription } = req.body;
