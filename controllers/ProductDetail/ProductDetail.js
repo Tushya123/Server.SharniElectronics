@@ -361,10 +361,10 @@ exports.downloadPdf = async (req, res, next) => {
     const { Description, ImageUrl, ProductDetailDescription } = req.body;
 
     // Fetch and save the logo image temporarily
-    const logoUrl = `https://server-sharnielectronics.onrender.com/uploads/header.png`;
+    const logoUrl = `https://server-sharni-electronics.vercel.app/uploads/header.png`;
 
     // Fetch and save the product image temporarily
-    const productImageUrl = ImageUrl!==""?`https://server-sharnielectronics.onrender.com/${ImageUrl}`:`https://server.sharnielectronics.com/uploads/Image_not_available.jpg`;
+    const productImageUrl = ImageUrl!==""?`https://server-sharni-electronics.vercel.app/${ImageUrl}`:`https://server.sharnielectronics.com/uploads/Image_not_available.jpg`;
 
     console.log("Logo URL:", logoUrl);
     console.log("Product Image URL:", productImageUrl);
