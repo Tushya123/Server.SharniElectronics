@@ -12,8 +12,8 @@ const puppeteer = require('puppeteer');
 
 exports.createProjectDetail = async (req, res) => {
   try {
-    if (!fs.existsSync(`https://server-sharni-electronics.vercel.app/uploads/ProductDetailImages`)) {
-      fs.mkdirSync(`https://server-sharni-electronics.vercel.app/uploads/ProductDetailImages`);
+    if (!fs.existsSync(`${__basedir}/uploads/ProductDetailImages`)) {
+      fs.mkdirSync(`${__basedir}/uploads/ProductDetailImages`);
     }
     let bannerImage = req.file ? `uploads/ProductDetailImages/${req.file.filename}` : '';
     let { ProductDetail, Description, IsActive, ProductDetailDescription } = req.body;
@@ -355,69 +355,69 @@ exports.getProductByDescription = async (req, res) => {
 const axios = require('axios');
 
  
-exports.downloadPdf = async (req, res, next) => {
-  try {
-    console.log("req.body", req.body);
-    const { Description, ImageUrl, ProductDetailDescription } = req.body;
+// exports.downloadPdf = async (req, res, next) => {
+//   try {
+//     console.log("req.body", req.body);
+//     const { Description, ImageUrl, ProductDetailDescription } = req.body;
 
-    // Fetch and save the logo image temporarily
-    const logoUrl = `https://server-sharni-electronics.vercel.app/uploads/header.png`;
+//     // Fetch and save the logo image temporarily
+//     const logoUrl = `https://server-sharnielectronics.onrender.com/uploads/header.png`;
 
-    // Fetch and save the product image temporarily
-    const productImageUrl = ImageUrl!==""?`https://server-sharni-electronics.vercel.app/${ImageUrl}`:`https://server-sharni-electronics.vercel.app/uploads/Image_not_available.jpg`;
+//     // Fetch and save the product image temporarily
+//     const productImageUrl = ImageUrl!==""?`https://server-sharnielectronics.onrender.com/${ImageUrl}`:`https://server.sharnielectronics.com/uploads/Image_not_available.jpg`;
 
-    console.log("Logo URL:", logoUrl);
-    console.log("Product Image URL:", productImageUrl);
+//     console.log("Logo URL:", logoUrl);
+//     console.log("Product Image URL:", productImageUrl);
 
-    // Read and compile the HTML template
-    const templateHtml = fs.readFileSync(path.join(__dirname, 'templet.html'), 'utf8');
-    const template = handlebars.compile(templateHtml);
+//     // Read and compile the HTML template
+//     const templateHtml = fs.readFileSync(path.join(__dirname, 'templet.html'), 'utf8');
+//     const template = handlebars.compile(templateHtml);
 
-    // Replace placeholders with actual data
-    const html = template({
-      logoUrl,
-      Description,
-      ImageUrl1: productImageUrl,
-      ProductDetailDescription,
-    });
+//     // Replace placeholders with actual data
+//     const html = template({
+//       logoUrl,
+//       Description,
+//       ImageUrl1: productImageUrl,
+//       ProductDetailDescription,
+//     });
 
-    // Launch Puppeteer and create the PDF
-    const browser = await puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      headless: true,
-      timeout: 60000 // Increase timeout to 60 seconds
-    });
+//     // Launch Puppeteer and create the PDF
+//     const browser = await puppeteer.launch({
+//       args: ['--no-sandbox', '--disable-setuid-sandbox'],
+//       headless: true,
+//       timeout: 60000 // Increase timeout to 60 seconds
+//     });
 
-    const page = await browser.newPage();
+//     const page = await browser.newPage();
     
-    // Set content to the HTML template
-    await page.setContent(html, { waitUntil: 'networkidle0', timeout: 60000 });
+//     // Set content to the HTML template
+//     await page.setContent(html, { waitUntil: 'networkidle0', timeout: 60000 });
 
-    // Generate PDF with custom header
-    const pdfBuffer = await page.pdf({
-      format: 'A4',
-      displayHeaderFooter: true,
-      headerTemplate: '<div></div>', // Blank header for the first page
+//     // Generate PDF with custom header
+//     const pdfBuffer = await page.pdf({
+//       format: 'A4',
+//       displayHeaderFooter: true,
+//       headerTemplate: '<div></div>', // Blank header for the first page
      
-      margin: {
-        top: '20px', // Top margin of 20px for subsequent pages
-        bottom: '20px',
+//       margin: {
+//         top: '20px', // Top margin of 20px for subsequent pages
+//         bottom: '20px',
         
-      }
-    });
+//       }
+//     });
 
-    // Close browser after PDF generation
-    await browser.close();
+//     // Close browser after PDF generation
+//     await browser.close();
 
-    // Set response headers and send the PDF
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="${Description}-${Date.now()}.pdf"`);
-    res.send(pdfBuffer);
-  } catch (err) {
-    console.error('Error generating PDF:', err); // Improved error logging
-    next(err);
-  }
-};
+//     // Set response headers and send the PDF
+//     res.setHeader('Content-Type', 'application/pdf');
+//     res.setHeader('Content-Disposition', `attachment; filename="${Description}-${Date.now()}.pdf"`);
+//     res.send(pdfBuffer);
+//   } catch (err) {
+//     console.error('Error generating PDF:', err); // Improved error logging
+//     next(err);
+//   }
+// };
 
 
  
