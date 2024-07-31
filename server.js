@@ -17,6 +17,8 @@ const cron = require("node-cron");
 const axios = require("axios");
 //var NodeCronJob = require("./nodeCron/NodeIndex");
 global.__basedir = __dirname;
+console.log(__basedir);
+
 
 const app = express();
 let databasestatus = "In-Progress";
