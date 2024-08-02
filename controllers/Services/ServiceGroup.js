@@ -1,5 +1,5 @@
 const ProductGroupSchema = require("../../models/Services/ServiceGroup");
-// const proddetails = require("../../models/ProductDetail/ProductDetail");
+const proddetails = require("../../models/Services/ServiceDetail");
 const fs=require("fs");
 
 exports.createAreatype = async (req, res) => {
@@ -67,7 +67,7 @@ exports.removeAreatype = async (req, res) => {
     const delTL = await ProductGroupSchema.findByIdAndDelete({
       _id: req.params._id,
     });
-    // await proddetails.deleteMany({ ProductDetail: req.params._id });
+    await proddetails.deleteMany({ ServiceDetail: req.params._id });
 
     res.json(delTL);
   } catch (err) {
