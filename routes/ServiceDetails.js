@@ -4,14 +4,14 @@ const fs = require("fs");
 const cors = require("cors");
 
 const catchAsync = require("../utils/catchAsync");
-const {listProjectDetailByParamsSearch, createProjectDetail, listProjectDetail, updateProjectDetail, removeProjectDetail, listProjectDetailByParams,getspecificProductDetail , getProductByDescription } = require("../controllers/ProductDetail/ProductDetail");
+const {listProjectDetailByParamsSearch, createProjectDetail, listProjectDetail, updateProjectDetail, removeProjectDetail, listProjectDetailByParams,getspecificProductDetail , getProductByDescription } = require("../controllers/Services/ServiceDetails");
 
 
 const router = express.Router();
 
 router.use(cors());
 
-const uploadDirectory = "uploads/ProductDetailImages";
+const uploadDirectory = "uploads/ServiceDetailImages";
 if (!fs.existsSync(uploadDirectory)) {
   fs.mkdirSync(uploadDirectory, { recursive: true });
 }
@@ -28,48 +28,48 @@ const multerStorage = multer.diskStorage({
 const upload = multer({ storage: multerStorage });
 
 router.post(
-  "/auth/create/projectdetail",
+  "/auth/create/servicedetail",
   upload.single("ProductImage"), 
   catchAsync(createProjectDetail)
 );
 
 router.put(
-    "/auth/update/projectdetail/:_id",
+    "/auth/update/servicedetail/:_id",
     upload.single("ProductImage"),
     catchAsync(updateProjectDetail)
   );
 
 router.get(
-    "/auth/list/projectdetail",
+    "/auth/list/servicedetail",
     catchAsync(listProjectDetail)
   );
   router.get(
-    "/auth/getspecific/projectdetail/:_id",
+    "/auth/getspecific/servicedetail/:_id",
     catchAsync(getspecificProductDetail)
   );
 
 router.delete(
-    "/auth/remove/projectdetail/:_id",
+    "/auth/remove/servicedetail/:_id",
     catchAsync(removeProjectDetail)
   );
   
 
   router.post(
-    "/auth/listprojectdetailbyparam",
+    "/auth/listservicedetailbyparam",
     
     catchAsync(listProjectDetailByParams)
   );
 
   
   router.post(
-    "/auth/listProjectDetailByParamsSearch",
+    "/auth/listServiceDetailByParamsSearch",
     
     catchAsync(listProjectDetailByParamsSearch)
   );
 
   const multerStorageCK = multer.diskStorage({
     destination: (req, file, cb) => {
-      const dest = "uploads/productCkEditor";
+      const dest = "uploads/serviceCkEditor";
       // Ensure the directory exists
       fs.mkdirSync(dest, { recursive: true });
       cb(null, dest);
@@ -82,7 +82,7 @@ router.delete(
   
   //upload images
   router.post(
-    "/auth/ckeditorproduct/imageupload",
+    "/auth/ckeditorservice/imageupload",
     uploadCk.single("uploadImage"),
     async (req, res) => {
       console.log(req.file.filename);
@@ -91,7 +91,7 @@ router.delete(
   );
 
   router.get(
-    "/auth/get/productdetail/:description",
+    "/auth/get/servicedetail/:description",
     catchAsync(getProductByDescription)
   );
   // router.post("/download-pdf", downloadPdf);

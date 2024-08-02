@@ -1,10 +1,8 @@
-const proddetails = require("../../models/ProductDetail/ProductDetail");
-const supplierquote=require("../../models/SupplierQuote/SupplierQuote")
+const proddetails = require("../../models/Services/ServiceDetail");
+const supplierquote=require("../../models/Services/ServiceGroup")
 const PDFDocument = require("pdfkit");
 const path = require('path');
 const fs = require("fs");
-
-
 const handlebars = require('handlebars'); 
 const img1 = path.join(__dirname, 'header.png');
 const ejs = require('ejs');
@@ -12,12 +10,12 @@ const puppeteer = require('puppeteer');
 
 exports.createProjectDetail = async (req, res) => {
   try {
-    if (!fs.existsSync(`${__basedir}/uploads/ProductDetailImages`)) {
-      fs.mkdirSync(`${__basedir}/uploads/ProductDetailImages`);
+    if (!fs.existsSync(`${__basedir}/uploads/ServiceDetailImages`)) {
+      fs.mkdirSync(`${__basedir}/uploads/ServiceDetailImages`);
 
     }
-    let bannerImage = req.file ? `uploads/ProductDetailImages/${req.file.filename}` : '';
-    let { ProductDetail, Description, IsActive, ProductDetailDescription } = req.body;
+    let bannerImage = req.file ? `uploads/ServiceDetailImages/${req.file.filename}` : '';
+    let { ServiceDetail, Description, IsActive, ProductDetailDescription } = req.body;
     console.log(typeof ProductDetailDescription);
 
     // Assuming ProductDetailDescription is passed as a stringified JSON array
@@ -32,7 +30,7 @@ exports.createProjectDetail = async (req, res) => {
     });
 
     const newProject = await new proddetails({
-      ProductDetail,
+ServiceDetail,
       Description,
       ImageUrl: bannerImage,
       IsActive,
@@ -59,7 +57,7 @@ const upload = multer();
 exports.updateProjectDetail = async (req, res) => {
   try {
     let bannerImage = req.file
-      ? `uploads/ProductDetailImages/${req.file.filename}`
+      ? `uploads/ServiceDetailImages/${req.file.filename}`
       : '';
     let fieldvalues = { ...req.body };
     if (bannerImage !== '') {
@@ -126,15 +124,15 @@ exports.listProjectDetailByParams = async (req, res) => {
       },
       {
         $lookup: {
-          from: "productgroups",
-          localField: "ProductDetail",
+          from: "servicegroups",
+          localField: "ServiceDetail",
           foreignField: "_id",
-          as: "ProductDetailTypes",
+          as: "ServiceDetailTypes",
         },
       },
       {
         $unwind: {
-          path: "$productgroups",
+          path: "$servicegroups",
           preserveNullAndEmptyArrays: true,
         },
       },
@@ -142,7 +140,7 @@ exports.listProjectDetailByParams = async (req, res) => {
         $match: {
           $or: [
             {
-              "ProductDetailTypes.0.ProductGroup": new RegExp(match, "i"),
+              "ServiceDetailTypes.0.ServiceGroup": new RegExp(match, "i"),
             },
             {
               Description: new RegExp(match, "i"),
@@ -184,7 +182,7 @@ exports.listProjectDetailByParams = async (req, res) => {
         $project: {
           count: "$stage1.count",
           data: "$stage2",
-          ProductDetailTypes: { $arrayElemAt: ["$ProductDetailTypes", 0] },
+          ServiceDetailTypes: { $arrayElemAt: ["$ServiceDetailTypes", 0] },
 
         },
       },
@@ -230,15 +228,15 @@ exports.listProjectDetailByParamsSearch = async (req, res) => {
       },
       {
         $lookup: {
-          from: "productgroups",
-          localField: "ProductDetail",
+          from: "servicegroups",
+          localField: "ServiceDetail",
           foreignField: "_id",
-          as: "ProductDetailTypes",
+          as: "ServiceDetailTypes",
         },
       },
       {
         $unwind: {
-          path: "$productgroups",
+          path: "$servicegroups",
           preserveNullAndEmptyArrays: true,
         },
       },
@@ -288,7 +286,7 @@ exports.listProjectDetailByParamsSearch = async (req, res) => {
         $project: {
           count: "$stage1.count",
           data: "$stage2",
-          ProductDetailTypes: { $arrayElemAt: ["$ProductDetailTypes", 0] },
+          ServiceDetailTypes: { $arrayElemAt: ["$ServiceDetailTypes", 0] },
 
         },
       },
@@ -320,7 +318,7 @@ exports.listProjectDetailByParamsSearch = async (req, res) => {
 
 exports.listProjectDetail=async(req,res)=>{
   try{
-    const list = await proddetails.find().populate({path:"ProductDetail",select:"ProductGroup"})
+    const list = await proddetails.find().populate({path:"ServiceDetail",select:"ServiceGroup"})
     res.status(200).send(list);
 
 
