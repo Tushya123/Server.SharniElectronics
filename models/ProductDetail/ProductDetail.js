@@ -13,6 +13,9 @@ const ProductDetailSchema = new mongoose.Schema(
     ImageUrl: {
       type: String
     },
+    CkDesc:{
+      type:String
+    },
     ProductDetailDescription:[
       {
         ProductKey: {

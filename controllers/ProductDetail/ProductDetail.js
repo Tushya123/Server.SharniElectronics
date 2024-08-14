@@ -17,7 +17,7 @@ exports.createProjectDetail = async (req, res) => {
 
     }
     let bannerImage = req.file ? `uploads/ProductDetailImages/${req.file.filename}` : '';
-    let { ProductDetail, Description, IsActive, ProductDetailDescription } = req.body;
+    let { ProductDetail, Description, IsActive, ProductDetailDescription,CkDesc } = req.body;
     console.log(typeof ProductDetailDescription);
 
     // Assuming ProductDetailDescription is passed as a stringified JSON array
@@ -36,7 +36,8 @@ exports.createProjectDetail = async (req, res) => {
       Description,
       ImageUrl: bannerImage,
       IsActive,
-      ProductDetailDescription: extractedObjects
+      ProductDetailDescription: extractedObjects,
+      CkDesc
     }).save();
 
     res.status(200).json({

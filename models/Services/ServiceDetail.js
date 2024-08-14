@@ -4,16 +4,19 @@ const ServiceDetailSchema = new mongoose.Schema(
   {
     ServiceDetail: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "servicegroup"
+      ref: "servicegroup",
     },
     Description: {
       type: String,
     },
-   
-    ImageUrl: {
-      type: String
+    CkDesc: {
+      type: String,
     },
-    ProductDetailDescription:[
+
+    ImageUrl: {
+      type: String,
+    },
+    ProductDetailDescription: [
       {
         ProductKey: {
           type: String,
@@ -21,14 +24,11 @@ const ServiceDetailSchema = new mongoose.Schema(
         ProductValue: {
           type: String,
         },
-        
       },
-        
-      
     ],
     IsActive: {
       type: Boolean,
-        default: ''
+      default: "",
     },
   },
   { timestamps: true }
