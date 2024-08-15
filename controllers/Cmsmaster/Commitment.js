@@ -4,10 +4,10 @@ exports.createCommitment = async (req, res) => {
     try {
       let CommitmentImage = req.file ? `uploads/CommitmentImages/${req.file.filename}` : null;
   
-      let { Title, Description, IsActive } = req.body;
+      let {  IsActive } = req.body;
   
       const add = await new Commitmentmodel({
-        Title, Description,CommitmentImage, IsActive 
+        CommitmentImage, IsActive 
        
       }).save();
       res.status(200).json({ isOk: true, data: add, message: "" });

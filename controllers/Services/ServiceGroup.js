@@ -8,51 +8,12 @@ exports.createAreatype = async (req, res) => {
       fs.mkdirSync(`${__basedir}/uploads/ServiceGroupImages`);
     }
     console.log(req.file)
-    let ImageUrl = req.file?req.file: null;
+    let ImageUrl = req.file
+    ? `uploads/ServiceGroupImages/${req.file.filename}`
+    : null;
     let { ServiceGroup, IsActive } = req.body;
-    
-    if (ImageUrl) {
-      const extname = path.extname(ImageUrl.filename).toLowerCase();
-      const originalPath = ImageUrl.path;
-
-      let targetPath;
-      if (extname !== ".jpeg" && extname !== ".jpg") {
-        targetPath = `uploads/ServiceGroupImages/${path.basename(
-          ImageUrl.filename,
-          extname
-        )}.jpeg`;
-
-        await sharp(originalPath)
-          .resize({
-            width: 250,
-            height: 330,
-            fit: "contain",
-            background: "white",
-          })
-          .jpeg() // Convert to JPEG format
-          .toFile(targetPath);
-
-        await fs.unlink(originalPath); // Remove the original file
-        ImageUrl.path = targetPath; // Update the path to the new JPEG image
-      } else {
-        // If the image is already in JPEG format, create a temporary file to resize
-        targetPath = `uploads/ServiceGroupImages/temp_${imageURL.filename}`;
-
-        await sharp(originalPath)
-          .resize({
-            width: 250,
-            height: 330,
-            fit: "contain",
-            background: "white",
-          })
-          .toFile(targetPath);
-
-        await fs.unlink(originalPath); // Remove the original file
-        await fs.rename(targetPath, originalPath); // Rename the temp file to original file
-      }
-    }
     const addAreatype = await new ProductGroupSchema({
-        ServiceGroup,IsActive,ImageUrl:ImageUrl.path}
+      ServiceGroup,IsActive,ImageUrl:ImageUrl}
     ).save();
     res.status(200).json({ isOk: true, data: addAreatype, message: "" });
   } catch (err) {
@@ -84,52 +45,9 @@ exports.listActiveAreatype = async (req, res) => {
 exports.updateAreatype = async (req, res) => {
   try {
     let bannerImage = req.file
-      ? req.file
+      ? `uploads/ServiceGroupImages/${req.file.filename}`
       : null;
     let fieldvalues = { ...req.body };
-    if (bannerImage) {
-      const extname = path.extname(bannerImage.filename).toLowerCase();
-      const originalPath = bannerImage.path;
-
-      let targetPath;
-      if (extname !== ".jpeg" && extname !== ".jpg") {
-        targetPath = `uploads/ServiceGroupImages/${path.basename(
-          bannerImage.filename,
-          extname
-        )}.jpeg`;
-
-        await sharp(originalPath)
-          .resize({
-            width: 250,
-            height: 330,
-            fit: "contain",
-            background: "white",
-          })
-          .jpeg() // Convert to JPEG format
-          .toFile(targetPath);
-
-        await fs.unlink(originalPath); // Remove the original file
-        bannerImage = targetPath; // Update imageURL to the new JPEG image path
-      } else {
-        // If the image is already in JPEG format, create a temporary file to resize
-        targetPath = `uploads/ServiceGroupImages/temp_${imageURL.filename}`;
-
-        await sharp(originalPath)
-          .resize({
-            width: 250,
-            height: 330,
-            fit: "contain",
-            background: "white",
-          })
-          .toFile(targetPath);
-
-        await fs.unlink(originalPath);
-        await fs.rename(targetPath, originalPath); // Rename the temp file to original file
-        bannerImage = originalPath; // Update imageURL to the resized JPEG image path
-      }
-    } else {
-      bannerImage = req.body.bannerImage; // Use the existing image URL if no new file is provided
-    }
     if (bannerImage != null) {
       fieldvalues.ImageUrl = bannerImage;
     }
